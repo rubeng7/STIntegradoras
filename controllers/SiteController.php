@@ -134,4 +134,13 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+    
+    public function actionDenegar($partial = false) {
+        return $partial ? $this->renderPartial('denegado') :
+                $this->render('denegado');
+    }
+
+    public function actionDenegarModal() {
+        return $this->renderAjax('denegadoBotonDetalles');
+    }
 }

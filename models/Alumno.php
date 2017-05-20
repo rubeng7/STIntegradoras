@@ -38,6 +38,18 @@ class Alumno extends \yii\db\ActiveRecord
             [['idAlumno'], 'exist', 'skipOnError' => true, 'targetClass' => Usuario::className(), 'targetAttribute' => ['idAlumno' => 'idUsuario']],
         ];
     }
+    
+    public function attributes() {
+        return array_merge(parent::attributes(), [
+            'idAlumno0.idUsuario0.nombre',
+            'idAlumno0.idUsuario0.paterno',
+            'idAlumno0.idUsuario0.materno',
+            'cuatrimestre',
+            'letra',
+            'turno',
+            'periodo'
+        ]);
+    }
 
     /**
      * @inheritdoc

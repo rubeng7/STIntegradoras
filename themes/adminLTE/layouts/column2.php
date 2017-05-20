@@ -105,7 +105,7 @@ use meysampg\treeview\Treeview;
                     ],
                     'submenuTemplate' => '<ul class="treeview-menu">{items}</ul>'
                 ],
-                ['label' => ThemeNav::link(' Usuarios', 'fa fa-user'), 'url' => ['site/usuario'], 'visible' => true],
+                ['label' => ThemeNav::link(' Usuarios', 'fa fa-user'), 'url' => ['usuario/index'], 'visible' => true],
             ],
         ]);
         ?>

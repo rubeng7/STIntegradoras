@@ -10,24 +10,30 @@ use app\models\Profesor;
 /**
  * SearchProfesor represents the model behind the search form about `app\models\Profesor`.
  */
-class SearchProfesor extends Profesor
-{
+class SearchProfesor extends Profesor {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['idProfesor', 'enComite', 'enIntegradora'], 'integer'],
-            [['nivelEstudios', 'especialidad'], 'safe'],
+            [
+                [
+                    'nivelEstudios', 'especialidad',
+                    'idProfesor0.idUsuario0.nombre',
+                    'idProfesor0.idUsuario0.paterno',
+                    'idProfesor0.idUsuario0.materno',
+                ],
+                'safe'
+            ],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,9 +45,9 @@ class SearchProfesor extends Profesor
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Profesor::find();
+        $query->innerJoinWith('idProfesor0')->innerJoinWith('idProfesor0.idUsuario0');
 
         // add conditions that should always apply here
 
@@ -65,8 +71,12 @@ class SearchProfesor extends Profesor
         ]);
 
         $query->andFilterWhere(['like', 'nivelEstudios', $this->nivelEstudios])
-            ->andFilterWhere(['like', 'especialidad', $this->especialidad]);
+                ->andFilterWhere(['like', 'especialidad', $this->especialidad])
+                ->andFilterWhere(['like', 'nombre', $this['idProfesor0.idUsuario0.nombre']])
+                ->andFilterWhere(['like', 'paterno', $this['idProfesor0.idUsuario0.paterno']])
+                ->andFilterWhere(['like', 'materno', $this['idProfesor0.idUsuario0.materno']]);
 
         return $dataProvider;
     }
+
 }

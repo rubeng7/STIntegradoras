@@ -18,21 +18,19 @@ use Yii;
  * @property Usuario $idProfesor0
  * @property ProfesorGrupoPeriodo[] $profesorGrupoPeriodos
  */
-class Profesor extends \yii\db\ActiveRecord
-{
+class Profesor extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'profesor';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['idProfesor', 'nivelEstudios', 'especialidad'], 'required'],
             [['idProfesor', 'enComite', 'enIntegradora'], 'integer'],
@@ -42,11 +40,18 @@ class Profesor extends \yii\db\ActiveRecord
         ];
     }
 
+    public function attributes() {
+        return array_merge(parent::attributes(), [
+            'idProfesor0.idUsuario0.nombre',
+            'idProfesor0.idUsuario0.paterno',
+            'idProfesor0.idUsuario0.materno',
+        ]);
+    }
+
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'idProfesor' => 'Id Profesor',
             'nivelEstudios' => 'Nivel Estudios',
@@ -59,32 +64,29 @@ class Profesor extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getComiteProfesors()
-    {
+    public function getComiteProfesors() {
         return $this->hasMany(ComiteProfesor::className(), ['idProfesor' => 'idProfesor']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdComites()
-    {
+    public function getIdComites() {
         return $this->hasMany(Comite::className(), ['idComite' => 'idComite'])->viaTable('comite_profesor', ['idProfesor' => 'idProfesor']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdProfesor0()
-    {
+    public function getIdProfesor0() {
         return $this->hasOne(Usuario::className(), ['idUsuario' => 'idProfesor']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProfesorGrupoPeriodos()
-    {
+    public function getProfesorGrupoPeriodos() {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idProfesor' => 'idProfesor']);
     }
+
 }

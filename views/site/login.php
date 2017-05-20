@@ -39,7 +39,7 @@ $this->title = 'Login';
                 <a href="#"><?php echo Yii::t('app', 'I forgot my password'); ?></a>
             </div><!-- /.col -->
              <div class="col-xs-4">
-                 <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
+                 <?= Html::submitButton('Ingresar', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
              </div>
          </div>
 
