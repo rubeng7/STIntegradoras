@@ -27,9 +27,9 @@ AppAsset::register($this);
             <!-- Logo -->
             <a href="<?= Yii::$app->request->baseUrl; ?>" class="logo">
               <!-- mini logo for sidebar mini 50x50 pixels -->
-              <span class="logo-mini"><b>S</b>TI</span>
+              <span class="logo-mini"><b>ST</b>I</span>
               <!-- logo for regular state and mobile devices -->
-              <span class="logo-lg"><b>STI</b>ntegradoras</span>
+              <span class="logo-lg"><b>ST</b> Integradoras</span>
             </a>
 
             <!-- Header Navbar: style can be found in header.less -->
@@ -65,7 +65,7 @@ AppAsset::register($this);
             <div class="pull-right hidden-xs">
                 <?php echo Yii::powered(); ?>
             </div>
-            Copyright &copy; <?php echo date('Y'); ?> by My Company. All Rights Reserved.
+            Copyright &copy; <?php echo date('Y'); ?> by SOFT Vision. All Rights Reserved.
         </footer>
 
     </div>

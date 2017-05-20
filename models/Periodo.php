@@ -97,4 +97,11 @@ class Periodo extends \yii\db\ActiveRecord
         
         return $arrayPeriodos;
     }
+    
+    public static function getPeriodoActual() {
+        $mesActual = date("n");
+        $añoActual = date("Y");
+        
+        
+    }
 }

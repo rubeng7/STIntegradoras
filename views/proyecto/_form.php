@@ -52,7 +52,7 @@ use yii\jui\DatePicker;
             <div class="panel panel-default" style="padding: 1%">
                 <?= $form->field($model, 'idEmpresa', ['options' => ['style' => 'display:none']])->textInput() ?>
                 <label>Empresa</label>
-                <div class="alert alert-danger" id="campoEmpresa">
+                <div class="alert alert-warning" id="campoEmpresa">
                     No se ha seleccionado ninguna empresa
                 </div>
                 <div align="right">

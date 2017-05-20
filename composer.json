@@ -21,8 +21,7 @@
 		"kartik-v/yii2-grid": "@dev",
         "kartik-v/yii2-date-range": "*",
         "yiisoft/yii2-jui": "~2.0.0",
-        "almasaeed2010/adminlte": "2.1.1",
-        "meysampg/yii2-treeview": "*"
+        "almasaeed2010/adminlte": "2.1.1"
     },
     "require-dev": {
         

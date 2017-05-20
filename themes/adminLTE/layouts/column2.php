@@ -35,21 +35,6 @@ use meysampg\treeview\Treeview;
         <!-- sidebar menu: : style can be found in sidebar.less -->
 
         <?php
-        /* echo Menu::widget([
-          'encodeLabels' => false,
-          'options' => [
-          'class' => 'sidebar-menu'
-          ],
-          'items' => Treeview::widget([
-          'items' => [
-          [
-          'label' => Yii::t('app', 'MENU GENERAL'),
-          'options' => ['class' => 'header']
-          ],
-          ]
-          ])
-          ]); */
-
         
         echo Menu::widget([
             'encodeLabels' => false,
@@ -134,7 +119,7 @@ use meysampg\treeview\Treeview;
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1> <?php echo Html::encode($this->title); ?> </h1>
+        <!--<h1> <?php //echo Html::encode($this->title); ?> </h1>-->
         <?=
         Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],

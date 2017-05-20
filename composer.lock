@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f605ecab1d9511608dfdccfb5d3df277",
+    "content-hash": "11d80e1c4aa7a5fa2da603e48e55fa23",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -641,50 +641,6 @@
                 "yii2"
             ],
             "time": "2017-02-22T05:58:53+00:00"
-        },
-        {
-            "name": "meysampg/yii2-treeview",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/meysampg/yii2-treeview.git",
-                "reference": "5e26bfed55bcae2e57f3a7be768fc2a7d026e077"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/meysampg/yii2-treeview/zipball/5e26bfed55bcae2e57f3a7be768fc2a7d026e077",
-                "reference": "5e26bfed55bcae2e57f3a7be768fc2a7d026e077",
-                "shasum": ""
-            },
-            "require": {
-                "yiisoft/yii2-bootstrap": "*"
-            },
-            "type": "yii2-extension",
-            "autoload": {
-                "psr-4": {
-                    "meysampg\\treeview\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Meysam P.G.",
-                    "email": "p.g.meysam@gmail.com"
-                }
-            ],
-            "description": "A Bootstrap Treeview Generator for AdminLte Sidebar",
-            "keywords": [
-                "AdminLTE",
-                "extension",
-                "generator",
-                "sidebar",
-                "treeview",
-                "yii2"
-            ],
-            "time": "2016-10-24T08:25:19+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
