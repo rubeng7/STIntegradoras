@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Esquema */
 
-$this->title = 'Create Esquema';
+$this->title = 'Crear Esquema';
 $this->params['breadcrumbs'][] = ['label' => 'Esquemas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

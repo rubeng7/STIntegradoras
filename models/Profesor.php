@@ -53,7 +53,7 @@ class Profesor extends \yii\db\ActiveRecord {
      */
     public function attributeLabels() {
         return [
-            'idProfesor' => 'Id Profesor',
+            'idProfesor' => 'ID',
             'nivelEstudios' => 'Nivel Estudios',
             'especialidad' => 'Especialidad',
             'enComite' => 'En Comite',

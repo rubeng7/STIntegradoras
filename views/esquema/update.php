@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Esquema */
 
-$this->title = 'Update Esquema: ' . $model->idEsquema;
+$this->title = 'Actualizar Esquema: ' . $model->nombre;
 $this->params['breadcrumbs'][] = ['label' => 'Esquemas', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->idEsquema, 'url' => ['view', 'id' => $model->idEsquema]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = ['label' => $model->nombre, 'url' => ['view', 'id' => $model->nombre]];
+$this->params['breadcrumbs'][] = 'Actualizar';
 ?>
 <div class="esquema-update">
 

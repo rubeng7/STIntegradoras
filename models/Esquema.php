@@ -50,12 +50,12 @@ class Esquema extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idEsquema' => 'Id Esquema',
+            'idEsquema' => 'ID',
             'nombre' => 'Nombre',
-            'noIntegradora' => 'No Integradora',
-            'noFases' => 'No Fases',
-            'fechaCreacion' => 'Fecha Creacion',
-            'idCarrera' => 'Id Carrera',
+            'noIntegradora' => 'Numero Integradora',
+            'noFases' => 'Numero Fases',
+            'fechaCreacion' => 'Fecha de Creacion',
+            'idCarrera' => 'Carrera',
         ];
     }
 
