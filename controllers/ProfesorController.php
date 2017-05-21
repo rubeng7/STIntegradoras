@@ -8,6 +8,8 @@ use app\models\SearchProfesor;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Persona;
+use app\models\Usuario;
 
 /**
  * ProfesorController implements the CRUD actions for Profesor model.
@@ -55,6 +57,10 @@ class ProfesorController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
+    
+    public function registrar() {
+        
+    }
 
     /**
      * Creates a new Profesor model.
@@ -64,12 +70,19 @@ class ProfesorController extends Controller
     public function actionCreate()
     {
         $model = new Profesor();
+        $persona = new Persona();
+        $usuario = new Usuario();
+        $comitesProfesores = [new \app\models\ComiteProfesor()];
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idProfesor]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'persona' => $persona,
+                'usuario' => $usuario,
+                'comitesProfesores' => $comitesProfesores,
+                
             ]);
         }
     }
