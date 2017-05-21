@@ -73,6 +73,7 @@ class ProfesorController extends Controller
         $persona = new Persona();
         $usuario = new Usuario();
         $comitesProfesores = [new \app\models\ComiteProfesor()];
+        $profesorGrupoPeriodos = [new \app\models\ProfesorGrupoPeriodo()];
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idProfesor]);
@@ -82,6 +83,7 @@ class ProfesorController extends Controller
                 'persona' => $persona,
                 'usuario' => $usuario,
                 'comitesProfesores' => $comitesProfesores,
+                'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
                 
             ]);
         }

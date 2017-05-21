@@ -45,9 +45,73 @@ use wbraganca\dynamicform\DynamicFormWidget;
             <?= $form->field($model, 'enComite')->checkbox(['label' => 'Miembro de comité']) ?>
             <?= $form->field($model, 'enIntegradora')->checkbox(['label' => 'Profesor de Integradora']) ?>
 
-            <div id="divGrupos" class="panel panel-default" style="padding: 1%; display: none">
-                <label>Grupos</label>
+            <div id="divGrupos" style="display: none">
+                <?php
+                rmrevin\yii\fontawesome\AssetBundle::register($this);
+                DynamicFormWidget::begin([
+                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                    'widgetBody' => '.form-options-body', // required: css class selector
+                    'widgetItem' => '.form-options-item', // required: css class
+                    //'limit' => 4, // the maximum times, an element can be cloned (default 999)
+                    'min' => 1, // 0 or 1 (default 1)
+                    'insertButton' => '.add-item', // css class
+                    'deleteButton' => '.delete-item', // css class
+                    'model' => $profesorGrupoPeriodos[0],
+                    'formId' => 'dynamic-form',
+                    'formFields' => [
+                        'idGrupo',
+                        'idPeriodo'
+                    ],
+                ]);
+                ?>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h4><i class="fa fa-clone"></i> Grupos</h4></div>
+                    <table class="table table-bordered table-responsive table-striped margin-b-none">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Grupo</th>
+                                <th class="text-center col-xs-2">Periodo</th>
+                                <th class="text-center vcenter col-xs-2">
+                                    <button type="button" class="add-item btn btn-success btn-xs" style="display: none">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-xs" id="add-item-2">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="form-options-body">
+                            <?php foreach ($profesorGrupoPeriodos as $i => $profesorGrup) : ?>
+                                <tr class="form-options-item">
+                                    <td class="col-xs-1">
+                                        <?php
+                                        echo $form->field($profesorGrup, "[$i]idGrupo")->textInput(['readonly' => true, 'class' => 'form-control filas'])->label('');
+                                        ?>
+                                    </td>
+                                    <td class="vcenter celdaNombre" align="center">
+                                        No ha seleccionado un grupo
+                                    </td>
+                                    <td align="center" class="vcenter">
+                                        No hay información que mostrar
+                                    </td>
+                                    <td class="text-center vcenter">
+                                        <button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
 
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <?php
+                    DynamicFormWidget::end();
+                    ?>
+                </div>
             </div>
 
             <div id="divComites" style="display: none">
