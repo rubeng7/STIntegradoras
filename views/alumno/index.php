@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Alumno', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Crear Alumno', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?=
     GridView::widget([
@@ -37,7 +37,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'letra',
-                'filter' => Html::activeDropDownList($searchModel, 'letra', Grupo::ARRAY_GRUPOS, ['class' => 'form-control', 'prompt' => 'Cualquiera'])
+                'filter' => Html::activeDropDownList($searchModel, 'letra', Grupo::ARRAY_GRUPOS, ['class' => 'form-control', 'prompt' => 'Cualquiera']),
+                'label' => 'Grupo',
             ],
             [
                 'attribute' => 'turno',

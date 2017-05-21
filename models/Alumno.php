@@ -57,7 +57,7 @@ class Alumno extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idAlumno' => 'Id Alumno',
+            'idAlumno' => 'ID',
             'matricula' => 'Matricula',
         ];
     }
