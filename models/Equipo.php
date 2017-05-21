@@ -59,13 +59,13 @@ class Equipo extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idEquipo' => 'Id Equipo',
+            'idEquipo' => 'ID',
             'nombre' => 'Nombre',
-            'idPeriodo' => 'Id Periodo',
-            'idGrupo' => 'Id Grupo',
-            'idProyecto' => 'Id Proyecto',
-            'idEsquema' => 'Id Esquema',
-            'idComite' => 'Id Comite',
+            'idPeriodo' => 'Periodo',
+            'idGrupo' => 'Grupo',
+            'idProyecto' => 'Proyecto',
+            'idEsquema' => 'Esquema',
+            'idComite' => 'Comite',
         ];
     }
 
