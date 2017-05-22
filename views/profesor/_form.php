@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Profesor */
@@ -39,11 +40,8 @@ use wbraganca\dynamicform\DynamicFormWidget;
         <div class="panel panel-heading"><h4>Referente a función</h4></div>
         <div class="panel panel-body" style="padding: 1%">
 
-            <?= Html::label('Asignación', 'asignacion', ['class' => 'control-label']) ?>
-            <br/><br/>
-
-            <?= $form->field($model, 'enComite')->checkbox(['label' => 'Miembro de comité']) ?>
-            <?= $form->field($model, 'enIntegradora')->checkbox(['label' => 'Profesor de Integradora']) ?>
+            <?= $form->field($model, 'enComite')->checkbox(['label' => 'Es miembro de algún comité']) ?>
+            <?= $form->field($model, 'enIntegradora')->checkbox(['label' => 'Es profesor de integradora']) ?>
 
             <div id="divGrupos" style="display: none">
                 <?php
@@ -118,7 +116,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 <?php
                 rmrevin\yii\fontawesome\AssetBundle::register($this);
                 DynamicFormWidget::begin([
-                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                    'widgetContainer' => 'dynamicform_wrapper2', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                     'widgetBody' => '.form-options-body', // required: css class selector
                     'widgetItem' => '.form-options-item', // required: css class
                     //'limit' => 4, // the maximum times, an element can be cloned (default 999)
@@ -162,7 +160,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                                         No ha seleccionado un comite
                                     </td>
                                     <td align="center" class="vcenter">
-                                        <div class="detalleRepresentante12"></div>
+                                        <div class="detalles"></div>
                                     </td>
                                     <td class="text-center vcenter">
                                         <button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
@@ -200,9 +198,37 @@ use wbraganca\dynamicform\DynamicFormWidget;
 
     <?php
     ActiveForm::end();
+    
+    Modal::begin([
+        'header' => '<h3>Buscar grupos</h3>',
+        'id' => 'modalGrupos',
+        'options' => [],
+        'size' => 'modal-lg',
+        'clientEvents' => ['hidden.bs.modal' => "function(){verificarEleccion()}"]
+    ]);
+    echo '<div id="divModalGrupos"></div>';
+    Modal::end();
+    
+    Modal::begin([
+        'header' => '<h3>Buscar comites</h3>',
+        'id' => 'modalComites',
+        'options' => [],
+        'size' => 'modal-lg',
+        'clientEvents' => ['hidden.bs.modal' => "function(){verificarEleccionComite();}"]
+    ]);
+    echo '<div id="divModalComites"></div>';
+    Modal::end();
 
     $js = '
         
+        // CORRECCIONES DE ESTILO
+        
+        $("#modalComites .modal-dialog").css("width", "90%");
+        $("#modalGrupos .modal-dialog").css("width", "90%");
+        
+        
+        // FUNCIONES PARA EVENTO DE CAMBIO DE SELECCIÓN CHECKBOX
+
         $("#profesor-encomite").change(function() {
             if($(this).is(":checked")){
                 $("#divComites").show();
@@ -218,6 +244,81 @@ use wbraganca\dynamicform\DynamicFormWidget;
                 $("#divGrupos").hide();
             }
         });
+        
+
+        // FUNCION PARA BUSCAR UN COMITE
+
+        function addComite(id) {
+            if (id == null) {
+                $("#divModalComites").load("' . \yii\helpers\Url::toRoute(['comite/select']) . '");
+                $("#modalComites").modal("show");
+            } else {
+                var $filas = $("#divComites .filas");
+                var tam = $filas.size();
+                $filas[tam -1].value = id;
+                $("#divComites #add-item-2").attr("style", "display:none");
+                $("#divComites .add-item").attr("style", "display:auto");
+                detallesComites();
+                $("#modalComites").modal("hide");
+            }
+            return false;
+        }
+        
+
+        // EVENTO PARA EL BOTON DE BUSQUEDA DE COMITES
+        
+        $("#divComites #add-item-2").click(function() {
+            addComite();
+        });
+        
+        
+        // FUNCIONES PARA LA CARGA DE LOS DETALLES DE COMITES
+
+        detallesComites();
+        
+        function detallesComites() {
+            
+            var $filas = $("#divComites .form-options-item");
+            $filas.each(function(index) {
+                var id = $(this).find("input").val();
+                
+                if(id == null || id == "") {
+                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['comite/view-modal']) . '?"+"id=0");
+                } else {
+                    $(this).find(".celdaNombre").load("' . \yii\helpers\Url::toRoute(['comite/get-datos']) . '?"+"id="+id);
+                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['comite/view-modal']) . '?"+"id="+id);
+                }
+            });
+        }
+        
+        // EVENTOS DE CONTROL PARA LA CARGA DE COMITES
+
+        var controlComite = false;
+        
+        $("#divComites .dynamicform_wrapper2").on("afterInsert", function(e, item) {    
+            
+            if(controlComite == false){
+                addComite();
+            }
+        });
+        
+        $("#divComites .dynamicform_wrapper2").on("afterDelete", function(e, item) {
+            detallesComite();    
+        });
+        
+        
+        function verificarEleccionComite(){
+            var $filas = $("#divComites .filas");
+            var $bot = $("#divComites .delete-item");
+            var tam = $filas.size();
+            
+            
+            if($filas[tam -1].value == "") {
+                $bot[tam - 1].click();
+            }
+        }
+        
+        
         
         ';
 

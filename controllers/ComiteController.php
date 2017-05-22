@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Periodo;
+use app\models\Utilerias;
 
 /**
  * ComiteController implements the CRUD actions for Comite model.
@@ -42,6 +43,17 @@ class ComiteController extends Controller {
                     'dataProvider' => $dataProvider,
         ]);
     }
+    
+    public function actionSelect() {
+
+        $searchModel = new SearchComite();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->renderAjax('indexModal', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
 
     /**
      * Displays a single Comite model.
@@ -52,6 +64,27 @@ class ComiteController extends Controller {
         return $this->render('view', [
                     'model' => $this->findModel($id),
         ]);
+    }
+    
+    
+    public function actionViewModal($id) {
+        if ($id == 0) {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $id,
+                        'tipo' => 1
+            ]);
+        } else {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $this->findModel($id),
+                        'tipo' => 2
+            ]);
+        }
+    }
+
+    public function actionGetDatos($id) {
+        $comite = Comite::findOne($id);
+        
+        return $comite->nombre . ' Para: ' . Utilerias::getPeriodo($comite->idPeriodo0);
     }
 
     /**

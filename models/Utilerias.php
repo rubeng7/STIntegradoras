@@ -72,5 +72,13 @@ class Utilerias {
         $dateFormat = date_create_from_format('Y-m-d', $date);
         return date_format($dateFormat, 'd/m/Y');
     }
+    
+    public static function getPeriodo(Periodo $periodo) {
+        $mesInicio = Utilerias::getNombreMes($periodo->mesInicio);
+        $mesFin = Utilerias::getNombreMes($periodo->mesFin);
+        $año = $periodo->anio;
+        
+        return $mesInicio . ' - ' . $mesFin . ' ' . $año;
+    }
 
 }
