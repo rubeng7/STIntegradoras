@@ -20,7 +20,6 @@ echo ($valid == true) ? 'si es valido' : 'no es valido';
         'model' => $model,
         'persona' => $persona,
         'usuario' => $usuario,
-        'comitesProfesores' => $comitesProfesores,
         'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
     ])
     ?>
