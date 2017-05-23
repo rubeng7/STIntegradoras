@@ -37,13 +37,10 @@ use yii\bootstrap\Modal;
     </div>
 
     <div class="panel panel-primary">
-        <div class="panel panel-heading"><h4>Referente a función</h4></div>
+        <div class="panel panel-heading"><h4>Referente a los grupos</h4></div>
         <div class="panel panel-body" style="padding: 1%">
 
-            <?= $form->field($model, 'enComite')->checkbox(['label' => 'Es miembro de algún comité']) ?>
-            <?= $form->field($model, 'enIntegradora')->checkbox(['label' => 'Es profesor de integradora']) ?>
-
-            <div id="divGrupos" style="display: none">
+            <div id="divGrupos">
                 <?php
                 rmrevin\yii\fontawesome\AssetBundle::register($this);
                 DynamicFormWidget::begin([
@@ -69,6 +66,7 @@ use yii\bootstrap\Modal;
                             <tr>
                                 <th class="text-center">#</th>
                                 <th class="text-center">Grupo</th>
+                                <th class="text-center col-xs-2">Detalles</th>
                                 <th class="text-center col-xs-2">Periodo</th>
                                 <th class="text-center vcenter col-xs-2">
                                     <button type="button" class="add-item btn btn-success btn-xs" style="display: none">
@@ -92,78 +90,13 @@ use yii\bootstrap\Modal;
                                         No ha seleccionado un grupo
                                     </td>
                                     <td align="center" class="vcenter">
-                                        No hay información que mostrar
-                                    </td>
-                                    <td class="text-center vcenter">
-                                        <button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-
-                            </tr>
-                        </tfoot>
-                    </table>
-                    <?php
-                    DynamicFormWidget::end();
-                    ?>
-                </div>
-            </div>
-
-            <div id="divComites" style="display: none">
-                <?php
-                rmrevin\yii\fontawesome\AssetBundle::register($this);
-                DynamicFormWidget::begin([
-                    'widgetContainer' => 'dynamicform_wrapper2', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                    'widgetBody' => '.form-options-body', // required: css class selector
-                    'widgetItem' => '.form-options-item', // required: css class
-                    //'limit' => 4, // the maximum times, an element can be cloned (default 999)
-                    'min' => 1, // 0 or 1 (default 1)
-                    'insertButton' => '.add-item', // css class
-                    'deleteButton' => '.delete-item', // css class
-                    'model' => $comitesProfesores[0],
-                    'formId' => 'dynamic-form',
-                    'formFields' => [
-                        'idComite',
-                    ],
-                ]);
-                ?>
-                <div class="panel panel-default">
-                    <div class="panel-heading"><h4><i class="fa fa-clone"></i> Comites</h4></div>
-                    <table class="table table-bordered table-responsive table-striped margin-b-none">
-                        <thead>
-                            <tr>
-                                <th class="text-center">#</th>
-                                <th class="text-center">Nombre</th>
-                                <th class="text-center col-xs-2">Detalles</th>
-                                <th class="text-center vcenter col-xs-2">
-                                    <button type="button" class="add-item btn btn-success btn-xs" style="display: none">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-success btn-xs" id="add-item-2">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="form-options-body">
-                            <?php foreach ($comitesProfesores as $i => $comiteP) : ?>
-                                <tr class="form-options-item">
-                                    <td class="col-xs-1">
-                                        <?php
-                                        echo $form->field($comiteP, "[$i]idComite")->textInput(['readonly' => true, 'class' => 'form-control filas'])->label('');
-                                        ?>
-                                    </td>
-                                    <td class="vcenter celdaNombre" align="center">
-                                        No ha seleccionado un comite
-                                    </td>
-                                    <td align="center" class="vcenter">
                                         <div class="detalles"></div>
                                     </td>
+                                    <td align="center" class="vcenter">
+                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos())->label('')?></div>
+                                    </td>
                                     <td class="text-center vcenter">
-                                        <button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
+                                        <div onclick="eliminarUnicoRegistro()" style="display:inline-block"><button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button></div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -198,7 +131,7 @@ use yii\bootstrap\Modal;
 
     <?php
     ActiveForm::end();
-    
+
     Modal::begin([
         'header' => '<h3>Buscar grupos</h3>',
         'id' => 'modalGrupos',
@@ -209,107 +142,91 @@ use yii\bootstrap\Modal;
     echo '<div id="divModalGrupos"></div>';
     Modal::end();
     
-    Modal::begin([
-        'header' => '<h3>Buscar comites</h3>',
-        'id' => 'modalComites',
-        'options' => [],
-        'size' => 'modal-lg',
-        'clientEvents' => ['hidden.bs.modal' => "function(){verificarEleccionComite();}"]
-    ]);
-    echo '<div id="divModalComites"></div>';
-    Modal::end();
-
     $js = '
         
         // CORRECCIONES DE ESTILO
         
-        $("#modalComites .modal-dialog").css("width", "90%");
         $("#modalGrupos .modal-dialog").css("width", "90%");
         
-        
-        // FUNCIONES PARA EVENTO DE CAMBIO DE SELECCIÓN CHECKBOX
+        // FUNCION PARA BUSCAR UN GRUPO
 
-        $("#profesor-encomite").change(function() {
-            if($(this).is(":checked")){
-                $("#divComites").show();
-            } else {
-                $("#divComites").hide();
-            }
-        });
-        
-        $("#profesor-enintegradora").change(function() {
-            if($(this).is(":checked")){
-                $("#divGrupos").show();
-            } else {
-                $("#divGrupos").hide();
-            }
-        });
-        
-
-        // FUNCION PARA BUSCAR UN COMITE
-
-        function addComite(id) {
+        function addGrupo(id) {
             if (id == null) {
-                $("#divModalComites").load("' . \yii\helpers\Url::toRoute(['comite/select']) . '");
-                $("#modalComites").modal("show");
+                $("#divModalGrupos").load("' . \yii\helpers\Url::toRoute(['grupo/select']) . '");
+                $("#modalGrupos").modal("show");
             } else {
-                var $filas = $("#divComites .filas");
+                var $filas = $("#divGrupos .filas");
                 var tam = $filas.size();
                 $filas[tam -1].value = id;
-                $("#divComites #add-item-2").attr("style", "display:none");
-                $("#divComites .add-item").attr("style", "display:auto");
-                detallesComites();
-                $("#modalComites").modal("hide");
+                $("#divGrupos #add-item-2").attr("style", "display:none");
+                $("#divGrupos .add-item").attr("style", "display:auto");
+                detallesGrupos();
+                $("#modalGrupos").modal("hide");
             }
             return false;
         }
         
 
-        // EVENTO PARA EL BOTON DE BUSQUEDA DE COMITES
+        // EVENTO PARA EL BOTON DE BUSQUEDA DE GRUPOS
         
-        $("#divComites #add-item-2").click(function() {
-            addComite();
+        $("#divGrupos #add-item-2").click(function() {
+            addGrupo();
         });
         
         
-        // FUNCIONES PARA LA CARGA DE LOS DETALLES DE COMITES
+        // FUNCIONES PARA LA CARGA DE LOS DETALLES DE GRUPOS
 
-        detallesComites();
+        detallesGrupos();
         
-        function detallesComites() {
+        function detallesGrupos() {
             
-            var $filas = $("#divComites .form-options-item");
+            var $filas = $("#divGrupos .form-options-item");
             $filas.each(function(index) {
                 var id = $(this).find("input").val();
                 
                 if(id == null || id == "") {
-                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['comite/view-modal']) . '?"+"id=0");
+                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id=0");
+                    $(this).find(".celdaNombre").html("No se ha seleccionado un grupo");
+                    $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos");
+                    $("#divGrupos #add-item-2").attr("style", "display:auto");
+                    $("#divGrupos .add-item").attr("style", "display:none");
                 } else {
-                    $(this).find(".celdaNombre").load("' . \yii\helpers\Url::toRoute(['comite/get-datos']) . '?"+"id="+id);
-                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['comite/view-modal']) . '?"+"id="+id);
+                    $(this).find(".celdaNombre").load("' . \yii\helpers\Url::toRoute(['grupo/get-datos']) . '?"+"id="+id);
+                    $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id="+id);
+                    $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+id);
                 }
             });
         }
         
-        // EVENTOS DE CONTROL PARA LA CARGA DE COMITES
+        // EVENTOS DE CONTROL PARA LA CARGA DE GRUPOS
 
-        var controlComite = false;
+        var controlGrupo = false;
         
-        $("#divComites .dynamicform_wrapper2").on("afterInsert", function(e, item) {    
+        $("#divGrupos .dynamicform_wrapper").on("afterInsert", function(e, item) {    
             
-            if(controlComite == false){
-                addComite();
+            if(controlGrupo == false){
+                addGrupo();
             }
         });
         
-        $("#divComites .dynamicform_wrapper2").on("afterDelete", function(e, item) {
-            detallesComite();    
+        $("#divGrupos .dynamicform_wrapper").on("afterDelete", function(e, item) {
+            detallesGrupos();
         });
         
+        function eliminarUnicoRegistro(){
+            var $filas = $("#divGrupos .form-options-item");
+            var noFilas = $filas.size();
+            $filas.each(function(index) {
+                if(noFilas == 1){
+                    $(this).find("input").val("");
+                }
+            });
+            detallesGrupos();
+        }
         
-        function verificarEleccionComite(){
-            var $filas = $("#divComites .filas");
-            var $bot = $("#divComites .delete-item");
+        function verificarEleccion(){
+            var $filas = $("#divGrupos .filas");
+            var $bot = $("#divGrupos .delete-item");
             var tam = $filas.size();
             
             

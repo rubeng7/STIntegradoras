@@ -37,7 +37,7 @@ class Usuario extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function rules() {
         return [
-            [['idUsuario', 'username', 'password'], 'required'],
+            [['username', 'password'], 'required'],
             [['idUsuario', 'activo'], 'integer'],
             [['rol'], 'string'],
             [['username', 'password'], 'string', 'max' => 30],
@@ -183,6 +183,35 @@ class Usuario extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
                 return Yii::$app->response->redirect(Url::toRoute(['site/denegar']), '301')->send();
             }
         }
+    }
+    
+    /**
+     * 
+     * @param \app\models\Persona $persona
+     * @param bool $validar
+     * @return bool
+     */
+    public function registrar($persona, $validar) {
+        $transaccion = \Yii::$app->db->beginTransaction();
+        try {
+            if ($persona->save($validar)) {
+                $this->idUsuario = $persona->idPersona;
+                if ($this->save($validar)) {
+                    $transaccion->commit();
+                    return true;
+                }
+            }
+            $transaccion->rollBack();
+            // Lanzar alertas
+            
+            return false;
+        } catch (Exception $ex) {
+            $transaccion->rollBack();
+            // Lanzar alertas
+            throwException($exception);
+            return false;
+        }
+        
     }
 
 }

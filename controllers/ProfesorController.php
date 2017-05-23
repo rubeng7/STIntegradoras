@@ -10,17 +10,18 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Persona;
 use app\models\Usuario;
+use app\models\Model;
+use app\models\ProfesorGrupoPeriodo;
 
 /**
  * ProfesorController implements the CRUD actions for Profesor model.
  */
-class ProfesorController extends Controller
-{
+class ProfesorController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -35,14 +36,13 @@ class ProfesorController extends Controller
      * Lists all Profesor models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new SearchProfesor();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -51,15 +51,10 @@ class ProfesorController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
-    }
-    
-    public function registrar() {
-        
     }
 
     /**
@@ -67,26 +62,51 @@ class ProfesorController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Profesor();
         $persona = new Persona();
         $usuario = new Usuario();
-        $comitesProfesores = [new \app\models\ComiteProfesor()];
-        $profesorGrupoPeriodos = [new \app\models\ProfesorGrupoPeriodo()];
+        
+        $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idProfesor]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-                'persona' => $persona,
-                'usuario' => $usuario,
-                'comitesProfesores' => $comitesProfesores,
-                'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
-                
-            ]);
+        if ($model->load(Yii::$app->request->post()) &&
+                $persona->load(Yii::$app->request->post()) &&
+                $usuario->load(Yii::$app->request->post())) {
+
+            $profesorGrupoPeriodos = Model::createMultiple(ProfesorGrupoPeriodo::className());
+            Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
+            
+            foreach ($profesorGrupoPeriodos as $pgp) {
+                $pgp->idProfesor = 1;
+            }
+
+            //validacion ajax
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return \yii\helpers\ArrayHelper::merge(
+                                ActiveForm::validateMultiple($profesorGrupoPeriodos), ActiveForm::validate($model), ActiveForm::validate($persona), ActiveForm::validate($usuario)
+                );
+            }
+
+            // validacion php
+            $valid = $model->validate() && $persona->validate() && $usuario->validate();
+            $valid = Model::validateMultiple($profesorGrupoPeriodos) && $valid;
+
+            if ($valid) {
+                $model->enIntegradora = 1;
+                if ($model->registrar($persona, $usuario, $profesorGrupoPeriodos, false)) {
+                    return $this->redirect(['view', 'id' => $model->idProfesor]);
+                }
+            }
         }
+        
+        return $this->render('create', [
+                    'model' => $model,
+                    'persona' => $persona,
+                    'usuario' => $usuario,
+                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
+                    'valid' => $valid
+        ]);
     }
 
     /**
@@ -95,15 +115,14 @@ class ProfesorController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idProfesor]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -114,8 +133,7 @@ class ProfesorController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -128,12 +146,12 @@ class ProfesorController extends Controller
      * @return Profesor the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Profesor::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

@@ -32,7 +32,7 @@ class Profesor extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['idProfesor', 'nivelEstudios', 'especialidad'], 'required'],
+            [['nivelEstudios', 'especialidad'], 'required'],
             [['idProfesor', 'enComite', 'enIntegradora'], 'integer'],
             [['nivelEstudios'], 'string', 'max' => 50],
             [['especialidad'], 'string', 'max' => 80],
@@ -87,6 +87,48 @@ class Profesor extends \yii\db\ActiveRecord {
      */
     public function getProfesorGrupoPeriodos() {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idProfesor' => 'idProfesor']);
+    }
+    
+    /**
+     * 
+     * @param \app\models\Persona $persona
+     * @param \app\models\Usuario $usuario
+     * @param \app\models\ProfesorGrupoPeriodo $profesorGrupoPeriodos
+     * @param bool $validar
+     * @return bool
+     */
+    public function registrar($persona, $usuario, $profesorGrupoPeriodos, $validar) {
+        $transaccion = \Yii::$app->db->beginTransaction();
+        try {
+            if ($usuario->registrar($persona, $validar)) {
+                $this->idProfesor = $usuario->idUsuario;
+                $this->enIntegradora = true;
+                if($this->save($validar)){
+                    $guardoPgp = true;
+                    foreach ($profesorGrupoPeriodos as $pgp) {
+                        $pgp->idProfesor = $this->idProfesor;
+                        if(!$pgp->save($validar)) {
+                            $guardoPgp = false;
+                            break;
+                        }
+                    }
+                    
+                    if($guardoPgp) {
+                        $transaccion->commit();
+                    } else {
+                        $transaccion->rollBack();
+                    }
+                    
+                    return $guardoPgp;
+                }
+            }
+            $transaccion->rollBack();
+            return false;
+        } catch (Exception $ex) {
+            $transaccion->rollBack();
+            throwException($exception);
+            return false;
+        }
     }
 
 }

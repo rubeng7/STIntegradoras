@@ -42,8 +42,19 @@ class GrupoController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-    }
+    }  
+    
+    public function actionSelect() {
 
+        $searchModel = new SearchGrupo();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->renderAjax('indexModal', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+    
     /**
      * Displays a single Grupo model.
      * @param integer $id
@@ -54,6 +65,25 @@ class GrupoController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+    
+    public function actionViewModal($id) {
+        if ($id == 0) {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $id,
+                        'tipo' => 1
+            ]);
+        } else {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $this->findModel($id),
+                        'tipo' => 2
+            ]);
+        }
+    }
+    
+    public function actionGetDatos($id) {
+        return Grupo::findOne($id)->toString();
+        
     }
 
     /**

@@ -109,5 +109,17 @@ class Grupo extends \yii\db\ActiveRecord {
     public function getProfesorGrupoPeriodos() {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idGrupo' => 'idGrupo']);
     }
+    
+    /**
+     * 
+     * @param \app\models\Grupo $grupo
+     */
+    public static function getIdentidadCompleta($grupo) {
+        return $grupo->cuatrimestre . ' ' . $grupo->letra . ' ' . $grupo->turno;
+    }
+    
+    public function toString() {
+        return $this->cuatrimestre . ' ' . $this->letra . ' ' . $this->turno;
+    }
 
 }

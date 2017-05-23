@@ -55,6 +55,7 @@ class UsuarioController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
+    
 
     /**
      * Creates a new Usuario model.

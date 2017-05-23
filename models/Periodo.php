@@ -17,21 +17,19 @@ use Yii;
  * @property Equipo[] $equipos
  * @property ProfesorGrupoPeriodo[] $profesorGrupoPeriodos
  */
-class Periodo extends \yii\db\ActiveRecord
-{
+class Periodo extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'periodo';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['mesInicio', 'mesFin', 'anio'], 'required'],
             [['mesInicio', 'mesFin'], 'string'],
@@ -42,8 +40,7 @@ class Periodo extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'idPeriodo' => 'Id Periodo',
             'mesInicio' => 'Mes Inicio',
@@ -55,53 +52,56 @@ class Periodo extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAlumnoGrupoPeriodos()
-    {
+    public function getAlumnoGrupoPeriodos() {
         return $this->hasMany(AlumnoGrupoPeriodo::className(), ['idPeriodo' => 'idPeriodo']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getComites()
-    {
+    public function getComites() {
         return $this->hasMany(Comite::className(), ['idPeriodo' => 'idPeriodo']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEquipos()
-    {
+    public function getEquipos() {
         return $this->hasMany(Equipo::className(), ['idPeriodo' => 'idPeriodo']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProfesorGrupoPeriodos()
-    {
+    public function getProfesorGrupoPeriodos() {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idPeriodo' => 'idPeriodo']);
     }
-    
-    public static function mapeaPeriodos(){
+
+    public static function mapeaPeriodos() {
         $periodos = Periodo::find()->orderBy('anio')->all();
         $arrayPeriodos = [];
         foreach ($periodos as $periodo) {
             $mesI = Utilerias::getNombreMes($periodo->mesInicio);
             $mesF = Utilerias::getNombreMes($periodo->mesFin);
             $año = $periodo->anio;
-            
+
             $arrayPeriodos[$periodo->idPeriodo] = $mesI . ' - ' . $mesF . ' ' . $año;
         }
-        
+
         return $arrayPeriodos;
     }
-    
+
     public static function getPeriodoActual() {
         $mesActual = date("n");
         $añoActual = date("Y");
-        
-        
     }
+
+    public function toString() {
+        $mesI = Utilerias::getNombreMes($this->mesInicio);
+        $mesF = Utilerias::getNombreMes($this->mesFin);
+        $año = $this->anio;
+        
+        return $mesI . ' - ' . $mesF . ' ' . $año;
+    }
+
 }

@@ -8,10 +8,12 @@ use yii\helpers\Html;
 $this->title = 'Crear Profesor';
 $this->params['breadcrumbs'][] = ['label' => 'Profesores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+echo ($valid == true) ? 'si es valido' : 'no es valido';
 ?>
 <div class="profesor-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="page-header"><h1><?= Html::encode($this->title) ?></h1></div>
 
     <?=
     $this->render('_form', [
