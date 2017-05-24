@@ -104,8 +104,7 @@ class ProfesorController extends Controller {
                     'model' => $model,
                     'persona' => $persona,
                     'usuario' => $usuario,
-                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
-                    'valid' => $valid
+                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos
         ]);
     }
 

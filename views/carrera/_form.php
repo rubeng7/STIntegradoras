@@ -11,6 +11,9 @@ use yii\widgets\ActiveForm;
 <div class="carrera-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos de la Carrera</h4></div>
+        <div class="panel panel-body">
 
     <?= $form->field($model, 'nivel')->dropDownList([ 'TSU' => 'TSU', 'INGENIERIA' => 'INGENIERIA', 'INGENIERIA PROFESIONAL' => 'INGENIERIA PROFESIONAL', 'LICENCIATURA' => 'LICENCIATURA', 'MAESTRIA' => 'MAESTRIA', 'DOCTORADO' => 'DOCTORADO', 'OTRO' => 'OTRO', ], ['prompt' => '']) ?>
 
@@ -20,6 +23,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'idDivision')->dropDownList(\app\models\Division::listaDivisionesCombo()) ?>
 
+            </div>
+    </div>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
