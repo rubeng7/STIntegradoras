@@ -5,10 +5,14 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Profesor */
 
-$this->title = 'Actualizar Profesor: ' . $model->idProfesor;
+$nombre = $model->idProfesor0->idUsuario0->toString();
+
+$this->title = 'Actualizar Profesor: ' . $nombre;
 $this->params['breadcrumbs'][] = ['label' => 'Profesores', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->idProfesor, 'url' => ['view', 'id' => $model->idProfesor]];
+$this->params['breadcrumbs'][] = ['label' => $nombre, 'url' => ['view', 'id' => $model->idProfesor]];
 $this->params['breadcrumbs'][] = 'Actualizar';
+
+//echo ($valid == true) ? 'si es valido' : 'no es valido';
 ?>
 <div class="profesor-update">
 
@@ -16,6 +20,9 @@ $this->params['breadcrumbs'][] = 'Actualizar';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'persona' => $persona,
+        'usuario' => $usuario,
+        'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
     ]) ?>
 
 </div>

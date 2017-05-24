@@ -88,7 +88,7 @@ class Profesor extends \yii\db\ActiveRecord {
     public function getProfesorGrupoPeriodos() {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idProfesor' => 'idProfesor']);
     }
-    
+
     /**
      * 
      * @param \app\models\Persona $persona
@@ -102,23 +102,27 @@ class Profesor extends \yii\db\ActiveRecord {
         try {
             if ($usuario->registrar($persona, $validar)) {
                 $this->idProfesor = $usuario->idUsuario;
-                $this->enIntegradora = true;
-                if($this->save($validar)){
+
+                if ($this->save($validar)) {
                     $guardoPgp = true;
-                    foreach ($profesorGrupoPeriodos as $pgp) {
-                        $pgp->idProfesor = $this->idProfesor;
-                        if(!$pgp->save($validar)) {
-                            $guardoPgp = false;
-                            break;
+
+                    if ($this->enIntegradora == 1) {
+                        //ProfesorGrupoPeriodo::deleteAll(['idProfesor' => $this->idProfesor]);
+                        foreach ($profesorGrupoPeriodos as $pgp) {
+                            $pgp->idProfesor = $this->idProfesor;
+                            if (!$pgp->save($validar)) {
+                                $guardoPgp = false;
+                                break;
+                            }
                         }
                     }
-                    
-                    if($guardoPgp) {
+
+                    if ($guardoPgp) {
                         $transaccion->commit();
                     } else {
                         $transaccion->rollBack();
                     }
-                    
+
                     return $guardoPgp;
                 }
             }
