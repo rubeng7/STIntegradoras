@@ -39,7 +39,8 @@ use yii\bootstrap\Modal;
     <div class="panel panel-primary">
         <div class="panel panel-heading"><h4>Referente a los grupos</h4></div>
         <div class="panel panel-body" style="padding: 1%">
-
+            <div style="display: none"><?= $form->field($model, 'enIntegradora')->checkbox()->label('') ?></div>
+            <p>Registros duplicados serán ignorados</p>
             <div id="divGrupos">
                 <?php
                 rmrevin\yii\fontawesome\AssetBundle::register($this);
@@ -93,7 +94,7 @@ use yii\bootstrap\Modal;
                                         <div class="detalles"></div>
                                     </td>
                                     <td align="center" class="vcenter">
-                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos())->label('')?></div>
+                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos())->label('') ?></div>
                                     </td>
                                     <td class="text-center vcenter">
                                         <div onclick="eliminarUnicoRegistro()" style="display:inline-block"><button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button></div>
@@ -103,7 +104,9 @@ use yii\bootstrap\Modal;
                         </tbody>
                         <tfoot>
                             <tr>
-
+                                <td colspan="5" align="right">
+                                    <?= Html::button('Nuevo periodo', ['onclick' => 'addPeriodo();$("#modalPeriodo").modal("show");', 'class' => 'btn btn-primary', 'style' => 'margin: 10px 10px;']) ?>
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
@@ -141,7 +144,7 @@ use yii\bootstrap\Modal;
     ]);
     echo '<div id="divModalGrupos"></div>';
     Modal::end();
-    
+
     $js = '
         
         // CORRECCIONES DE ESTILO
@@ -158,8 +161,8 @@ use yii\bootstrap\Modal;
                 var $filas = $("#divGrupos .filas");
                 var tam = $filas.size();
                 $filas[tam -1].value = id;
-                $("#divGrupos #add-item-2").attr("style", "display:none");
-                $("#divGrupos .add-item").attr("style", "display:auto");
+                //$("#divGrupos #add-item-2").attr("style", "display:none");
+                //$("#divGrupos .add-item").attr("style", "display:auto");
                 detallesGrupos();
                 $("#modalGrupos").modal("hide");
             }
@@ -180,21 +183,48 @@ use yii\bootstrap\Modal;
         
         function detallesGrupos() {
             
+            // Guardar las filas de los grupos en un objeto jQuery
             var $filas = $("#divGrupos .form-options-item");
+            
+            // Recorrer las filas
             $filas.each(function(index) {
+                // Obtener el id del input idGrupo en la fila actual
                 var id = $(this).find("input").val();
+                
+                // Obtener el numero de filas
+                var tam = $filas.size();
+                
+                if(tam == 1) {
+                    // Si solo hay una fila...
+                    if(id == null || id == "") {   
+                        // Y si esa fila esta vacia
+                        $("#divGrupos #add-item-2").attr("style", "display:auto");
+                        $("#divGrupos .add-item").attr("style", "display:none");
+                        $("#profesor-enintegradora").prop("checked", "");
+                    } else {
+                        // Si no esta vacia
+                        $("#divGrupos #add-item-2").attr("style", "display:none");
+                        $("#divGrupos .add-item").attr("style", "display:auto");
+                        $("#profesor-enintegradora").prop("checked", "checked");
+                    }
+                } else {
+                    // Si hay mas de una fila
+                    $("#divGrupos #add-item-2").attr("style", "display:none");
+                    $("#divGrupos .add-item").attr("style", "display:auto");
+                    $("#profesor-enintegradora").prop("checked", "checked");
+                }
                 
                 if(id == null || id == "") {
                     $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id=0");
-                    $(this).find(".celdaNombre").html("No se ha seleccionado un grupo");
-                    $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos");
-                    $("#divGrupos #add-item-2").attr("style", "display:auto");
-                    $("#divGrupos .add-item").attr("style", "display:none");
+                    $(this).find(".celdaNombre").html("No se ha seleccionado un grupo");                    
+                    //$("#divGrupos #add-item-2").attr("style", "display:auto");
+                    //$("#divGrupos .add-item").attr("style", "display:none");
                 } else {
                     $(this).find(".celdaNombre").load("' . \yii\helpers\Url::toRoute(['grupo/get-datos']) . '?"+"id="+id);
                     $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id="+id);
-                    $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+id);
+                    //$(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+id);
                 }
+                $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos");
             });
         }
         

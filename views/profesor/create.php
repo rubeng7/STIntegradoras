@@ -9,7 +9,7 @@ $this->title = 'Crear Profesor';
 $this->params['breadcrumbs'][] = ['label' => 'Profesores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-echo ($valid == true) ? 'si es valido' : 'no es valido';
+//echo ($valid == true) ? 'si es valido' : 'no es valido';
 ?>
 <div class="profesor-create">
 

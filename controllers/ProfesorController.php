@@ -66,8 +66,11 @@ class ProfesorController extends Controller {
         $model = new Profesor();
         $persona = new Persona();
         $usuario = new Usuario();
-        
+
         $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
+
+        // SE ACTIVA ESTO CUANDO SE CREA UN PROFESOR DESDE EL MODULO PROFESORES
+        $model->enIntegradora = 1;
 
         if ($model->load(Yii::$app->request->post()) &&
                 $persona->load(Yii::$app->request->post()) &&
@@ -75,7 +78,7 @@ class ProfesorController extends Controller {
 
             $profesorGrupoPeriodos = Model::createMultiple(ProfesorGrupoPeriodo::className());
             Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
-            
+
             foreach ($profesorGrupoPeriodos as $pgp) {
                 $pgp->idProfesor = 1;
             }
@@ -99,13 +102,12 @@ class ProfesorController extends Controller {
                 }
             }
         }
-        
+
         return $this->render('create', [
                     'model' => $model,
                     'persona' => $persona,
                     'usuario' => $usuario,
                     'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
-                    'valid' => $valid
         ]);
     }
 
@@ -116,15 +118,60 @@ class ProfesorController extends Controller {
      * @return mixed
      */
     public function actionUpdate($id) {
-        $model = $this->findModel($id);
+        $model = Profesor::findOne($id);
+        $usuario = $model->idProfesor0;
+        $persona = $usuario->idUsuario0;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idProfesor]);
-        } else {
-            return $this->render('update', [
-                        'model' => $model,
-            ]);
+        $profesorGrupoPeriodos = $model->profesorGrupoPeriodos;
+
+        if ($model->load(Yii::$app->request->post()) &&
+                $persona->load(Yii::$app->request->post()) &&
+                $usuario->load(Yii::$app->request->post())) {
+
+            $profesorGrupoPeriodosN = Model::createMultiple(ProfesorGrupoPeriodo::className());
+            Model::loadMultiple($profesorGrupoPeriodosN, \Yii::$app->request->post());
+
+            foreach ($profesorGrupoPeriodosN as $pgp) {
+                $pgp->idProfesor = $model->idProfesor;
+            }
+
+            $transaccion = Yii::$app->db->beginTransaction();
+
+            $profesorGrupoPeriodosOld = array_udiff($profesorGrupoPeriodos, $profesorGrupoPeriodosN, ['app\models\ProfesorGrupoPeriodo', 'compare']);
+            $profesorGrupoPeriodosN = array_udiff($profesorGrupoPeriodosN, $profesorGrupoPeriodos, ['app\models\ProfesorGrupoPeriodo', 'compare']);
+
+            $profesorGrupoPeriodosN = \app\models\Utilerias::my_array_unique($profesorGrupoPeriodosN);
+
+            //echo '<script>alert("'. $profesorGrupoPeriodosOld[0]->idGrupo.'");</script>';
+            ProfesorGrupoPeriodo::eliminarMultiple($profesorGrupoPeriodosOld);
+
+            //validacion ajax
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return \yii\helpers\ArrayHelper::merge(
+                                ActiveForm::validateMultiple($profesorGrupoPeriodosN), ActiveForm::validate($model), ActiveForm::validate($persona), ActiveForm::validate($usuario)
+                );
+            }
+
+            // validacion php
+            $valid = $model->validate() && $persona->validate() && $usuario->validate();
+            $valid = Model::validateMultiple($profesorGrupoPeriodosN) && $valid;
+
+            if ($valid) {
+                if ($model->registrar($persona, $usuario, $profesorGrupoPeriodosN, false)) {
+                    $transaccion->commit();
+                    return $this->redirect(['view', 'id' => $model->idProfesor]);
+                }
+            }
+            $transaccion->rollBack();
         }
+
+        return $this->render('update', [
+                    'model' => $model,
+                    'persona' => $persona,
+                    'usuario' => $usuario,
+                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
+        ]);
     }
 
     /**

@@ -68,4 +68,8 @@ class Persona extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Usuario::className(), ['idUsuario' => 'idPersona']);
     }
+    
+    public function toString() {
+        return $this->nombre . ' ' . $this->paterno . ' ' . $this->materno;
+    }
 }
