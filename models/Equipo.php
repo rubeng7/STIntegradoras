@@ -52,6 +52,10 @@ class Equipo extends \yii\db\ActiveRecord
             [['idComite'], 'exist', 'skipOnError' => true, 'targetClass' => Comite::className(), 'targetAttribute' => ['idComite' => 'idComite']],
         ];
     }
+    
+    public function attributes() {
+        return array_merge(parent::attributes(), ['idGrupo0.idCarrera0.nombre', 'idGrupo0.idCarrera0.idCarrera',]);
+    }
 
     /**
      * @inheritdoc

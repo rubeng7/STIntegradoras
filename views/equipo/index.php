@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SearchEquipo */
@@ -19,18 +19,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Crear Equipo', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
+        'responsive' => true,
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'idEquipo',
+            [
+                'attribute' =>'idGrupo0.idCarrera0.nombre',
+                'label'=>'Carrera',
+                'filter' => Html::activeDropDownList($searchModel, 'idGrupo0.idCarrera0.idCarrera', app\models\Carrera::getListaConDivCombo(), ['class' => 'form-control', 'prompt' => 'Cualquiera'])
+            ],
             'nombre',
             'idPeriodo',
             'idGrupo',
             'idProyecto',
-            // 'idEsquema',
-            // 'idComite',
+            'idEsquema',
+            'idComite',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
