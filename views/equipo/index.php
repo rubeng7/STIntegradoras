@@ -31,11 +31,37 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Html::activeDropDownList($searchModel, 'idGrupo0.idCarrera0.idCarrera', app\models\Carrera::getListaConDivCombo(), ['class' => 'form-control', 'prompt' => 'Cualquiera'])
             ],
             'nombre',
-            'idPeriodo',
-            'idGrupo',
-            'idProyecto',
-            'idEsquema',
-            'idComite',
+            [
+                'label'=>'Periodo',
+                'attribute' =>'idPeriodo0.idPeriodo',
+                'value' => function($model, $key, $index, $grid){
+                    return $model->idPeriodo0->toString();
+        
+                },
+            ],
+            [
+                'label' => 'Grupo',
+                'attribute' => 'idGrupo',
+                'value' => function($model, $key, $index, $grid){
+                    return $model->idGrupo0->toString();
+        
+                },
+            ],
+            [
+                'label' => 'Proyecto',
+                'attribute' => 'idProyecto',
+                'value' => 'idProyecto0.nombre',
+            ],
+            [
+                'label' => 'Esquema',
+                'attribute' => 'idEsquema',
+                'value' => 'idEsquema0.nombre',
+            ],
+            [
+                'label' => 'Comite',
+                'attribute' => 'idComite',
+                'value' => 'idComite0.nombre',
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
