@@ -87,11 +87,11 @@ use meysampg\treeview\Treeview;
                     'url' => '#',
                     'items' => [
                         [
-                            'label' => ThemeNav::link(' Alumnos', 'fa fa-child'),
+                            'label' => ThemeNav::link(' Alumnos', 'fa fa-user-plus'),
                             'url' => ['alumno/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Equipos', 'fa fa-male'),
+                            'label' => ThemeNav::link(' Equipos', 'fa fa-users'),
                             'url' => ['equipo/index'],
                         ],
                         [
