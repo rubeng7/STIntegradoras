@@ -43,17 +43,17 @@ use meysampg\treeview\Treeview;
             ],
             'items' => [
                 ['label' => Yii::t('app', 'MENU GENERAL'), 'options' => ['class' => 'header']],
-                ['label' => ThemeNav::link(' Home', 'fa fa-dashboard'), 'url' => ['site/index'], 'visible' => true],
+                ['label' => ThemeNav::link(' Home', 'fa fa-home'), 'url' => ['site/index'], 'visible' => true],
                 [
-                    'label' => ThemeNav::link(' Estructura escolar', 'fa fa-dashboard'),
+                    'label' => ThemeNav::link(' Estructura escolar', 'fa fa-sitemap'),
                     'url' => '#',
                     'items' => [
                         [
-                            'label' => ThemeNav::link(' Divisiones', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Divisiones', 'fa fa-server'),
                             'url' => ['division/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Carreras', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Carreras', 'fa fa-book'),
                             'url' => ['carrera/index'],
                         ],
                         [
@@ -64,19 +64,19 @@ use meysampg\treeview\Treeview;
                     'submenuTemplate' => '<ul class="treeview-menu">{items}</ul>'
                 ],
                 [
-                    'label' => ThemeNav::link(' Asesorias', 'fa fa-diamond'),
+                    'label' => ThemeNav::link(' Asesorias', 'fa fa-institution'),
                     'url' => '#',
                     'items' => [
                         [
-                            'label' => ThemeNav::link(' Profesores', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Profesores', 'fa fa-user-secret'),
                             'url' => ['profesor/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Comites', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Comites', 'fa fa-users'),
                             'url' => ['comite/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Esquemas', 'fa fa-users'),
+                            'label' => ThemeNav::link(' Esquemas', 'fa fa-bar-chart'),
                             'url' => ['esquema/index'],
                         ],
                     ],
@@ -87,19 +87,19 @@ use meysampg\treeview\Treeview;
                     'url' => '#',
                     'items' => [
                         [
-                            'label' => ThemeNav::link(' Alumnos', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Alumnos', 'fa fa-child'),
                             'url' => ['alumno/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Equipos', 'fa fa-dashboard'),
+                            'label' => ThemeNav::link(' Equipos', 'fa fa-male'),
                             'url' => ['equipo/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Proyectos', 'fa fa-users'),
+                            'label' => ThemeNav::link(' Proyectos', 'fa fa-book'),
                             'url' => ['proyecto/index'],
                         ],
                         [
-                            'label' => ThemeNav::link(' Empresas', 'fa fa-users'),
+                            'label' => ThemeNav::link(' Empresas', 'fa fa-yelp'),
                             'url' => ['empresa/index'],
                         ],
                     ],
