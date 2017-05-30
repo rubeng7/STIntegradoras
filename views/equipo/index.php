@@ -20,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <?= GridView::widget([
         'responsive' => true,
+        'pjax' => true,
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -33,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'nombre',
             [
                 'label'=>'Periodo',
-                'attribute' =>'idPeriodo0.idPeriodo',
+                'attribute' =>'idPeriodo',
                 'value' => function($model, $key, $index, $grid){
                     return $model->idPeriodo0->toString();
         
@@ -52,11 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'idProyecto',
                 'value' => 'idProyecto0.nombre',
             ],
-            [
-                'label' => 'Esquema',
-                'attribute' => 'idEsquema',
-                'value' => 'idEsquema0.nombre',
-            ],
+            
             [
                 'label' => 'Comite',
                 'attribute' => 'idComite',

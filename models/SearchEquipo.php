@@ -19,7 +19,7 @@ class SearchEquipo extends Equipo
     {
         return [
             [['idEquipo', 'idPeriodo', 'idGrupo', 'idProyecto', 'idEsquema', 'idComite'], 'integer'],
-            [['nombre'], 'safe'],
+            [['nombre','idGrupo0.idCarrera0.idCarrera'], 'safe'],
         ];
     }
 
@@ -41,7 +41,8 @@ class SearchEquipo extends Equipo
      */
     public function search($params)
     {
-        $query = Equipo::find();
+        $query = Equipo::find()->with('idGrupo0');
+        $query->innerJoinWith('idGrupo0');
 
         // add conditions that should always apply here
 
@@ -59,12 +60,11 @@ class SearchEquipo extends Equipo
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'idEquipo' => $this->idEquipo,
             'idPeriodo' => $this->idPeriodo,
             'idGrupo' => $this->idGrupo,
             'idProyecto' => $this->idProyecto,
-            'idEsquema' => $this->idEsquema,
             'idComite' => $this->idComite,
+            'grupo.idCarrera' => $this['idGrupo0.idCarrera0.idCarrera'],
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre]);
