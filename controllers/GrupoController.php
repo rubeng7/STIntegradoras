@@ -149,7 +149,7 @@ class GrupoController extends Controller
             $grupo->delete();
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

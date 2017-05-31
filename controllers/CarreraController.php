@@ -113,7 +113,7 @@ class CarreraController extends Controller
             $carrera->delete();
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

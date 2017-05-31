@@ -37,7 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Html::activeDropDownList($searchModel, 'idPeriodo', \app\models\Periodo::mapeaPeriodos(), ['class' => 'form-control', 'prompt' => 'Cualquiera'])
             ],
             
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

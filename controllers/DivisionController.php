@@ -108,7 +108,7 @@ class DivisionController extends Controller {
             $division->delete();
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

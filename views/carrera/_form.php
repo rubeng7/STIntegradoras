@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\models\Carrera */
 /* @var $form yii\widgets\ActiveForm */
+\app\models\Utilerias::lanzarFlashes();
 ?>
 
 <div class="carrera-form">

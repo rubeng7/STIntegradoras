@@ -79,7 +79,7 @@ class Periodo extends \yii\db\ActiveRecord {
     }
 
     public static function mapeaPeriodos() {
-        $periodos = Periodo::find()->orderBy('anio')->all();
+        $periodos = Periodo::find()->orderBy('mesInicio DESC, anio DESC')->all();
         $arrayPeriodos = [];
         foreach ($periodos as $periodo) {
             $mesI = Utilerias::getNombreMes($periodo->mesInicio);

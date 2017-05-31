@@ -9,6 +9,7 @@ use yii\widgets\DetailView;
 $this->title = $model->nombre;
 $this->params['breadcrumbs'][] = ['label' => 'Carreras', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+\app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="carrera-view">
 

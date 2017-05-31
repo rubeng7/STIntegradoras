@@ -10,13 +10,20 @@ use yii\widgets\ActiveForm;
 
 <div class="periodo-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos del periodo</h4></div>
+        <div class="panel panel-body">
 
-    <?= $form->field($model, 'mesInicio')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
+            <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'mesFin')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
+            <?= $form->field($model, 'mesInicio')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
 
-    <?= $form->field($model, 'anio')->textInput() ?>
+            <?= $form->field($model, 'mesFin')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
+
+            <?= $form->field($model, 'anio')->textInput() ?>
+
+        </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
