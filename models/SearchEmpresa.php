@@ -41,7 +41,10 @@ class SearchEmpresa extends Empresa
      */
     public function search($params)
     {
-        $query = Empresa::find();
+        $query = Empresa::find()->select(['empresa.*', 'CONCAT(calle, " ", numero, " ",'
+                . ' ciudad, " ", municipio, " ", estado, " CP:", cp) as direccionCompleta'])
+                ->innerJoinWith('idDireccion0');
+        
 
         // add conditions that should always apply here
 
@@ -68,9 +71,7 @@ class SearchEmpresa extends Empresa
             ->andFilterWhere(['like', 'giro', $this->giro])
             ->andFilterWhere(['like', 'responsable', $this->responsable])
             ->andFilterWhere(['like', 'telefono', $this->telefono])
-            ->andFilterWhere(['like', '(SELECT CONCAT(calle, " ", numero, " ",'
-                . ' ciudad, " ", municipio, " ", estado, " CP:", cp) FROM direccion)',
-                $this->direccionCompleta]);
+            ->andFilterWhere(['like', 'direccionCompleta', $this->direccionCompleta]);
 
         return $dataProvider;
     }

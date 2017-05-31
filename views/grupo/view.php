@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Grupo */
 
-$this->title = $model->cuatrimestre . '-'. $model->letra. '    '. $model->turno;
+$this->title = $model->toString();
 $this->params['breadcrumbs'][] = ['label' => 'Grupos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \app\models\Utilerias::lanzarFlashes();
