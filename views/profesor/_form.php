@@ -105,7 +105,7 @@ use yii\bootstrap\Modal;
                         <tfoot>
                             <tr>
                                 <td colspan="5" align="right">
-                                    <?= Html::button('Nuevo periodo', ['onclick' => 'addPeriodo();$("#modalPeriodo").modal("show");', 'class' => 'btn btn-primary', 'style' => 'margin: 10px 10px;']) ?>
+                                    <?= Html::button('Nuevo periodo', ['onclick' => 'nuevoPeriodo();$("#modalPeriodo").modal("show");', 'class' => 'btn btn-primary', 'style' => 'margin: 10px 10px;']) ?>
                                 </td>
                             </tr>
                         </tfoot>
@@ -143,6 +143,14 @@ use yii\bootstrap\Modal;
         'clientEvents' => ['hidden.bs.modal' => "function(){verificarEleccion()}"]
     ]);
     echo '<div id="divModalGrupos"></div>';
+    Modal::end();
+    
+    Modal::begin([
+        'header' => '<h3 align=center>Nuevo periodo</h3>',
+        'id' => 'modalPeriodo',
+        'clientEvents' => ['hidden.bs.modal' => "function(){verificarEleccion()}"]
+    ]);
+    echo '<div id="divNewPeriodo"></div>';
     Modal::end();
 
     $js = '
@@ -265,7 +273,36 @@ use yii\bootstrap\Modal;
             }
         }
         
+
+        // FUNCION PARA REGISTRAR UN NUEVO PERIODO
         
+        function nuevoPeriodo() {
+            var $filas = $("#divGrupos .filas");
+            var tam = $filas.size();
+            if($filas[tam -1].value != "") {
+                //Crear nueva fila
+                controlGrupo = true;
+                $(".add-item").click();
+                controlGrupo = false;
+            }
+            
+            $.ajax({
+                url: "' . \yii\helpers\Url::toRoute(['periodo/create']) . '",
+                data: $(this).serialize(),
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if(data.status == "failure") {
+                        $("#divNewPeriodo").html(data.div);
+                        $("#divNewPeriodo form").submit(nuevoPeriodo);
+                    } else {
+                        detallesGrupos();
+                        $("#modalPeriodo").modal("hide");
+                    }
+                }
+            });
+            return false;
+        }
         
         ';
 

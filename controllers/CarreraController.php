@@ -101,7 +101,17 @@ class CarreraController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $carrera = $this->findModel($id);
+        if(count($carrera->grupos) > 0) {
+            // Hay grupos en esta carrera!!
+            \app\models\Utilerias::setFlash('car-del-1', 'No se puede eliminar '
+                    . 'esta carrera debido a que tiene <b>GRUPOS</b> relacionados', 'Problemas al eliminar', 5000);
+        } elseif(count($carrera->esquemas) > 0) {
+            \app\models\Utilerias::setFlash('car-del-2', 'No se puede eliminar '
+                    . 'esta carrera debido a que tiene <b>ESQUEMAS</b> relacionados', 'Problemas al eliminar', 5000);
+        } else {
+            $carrera->delete();
+        }
 
         return $this->redirect(['index']);
     }

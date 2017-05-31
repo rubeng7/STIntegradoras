@@ -23,7 +23,8 @@
         "yiisoft/yii2-jui": "~2.0.0",
         "almasaeed2010/adminlte": "2.1.1",
         "wbraganca/yii2-dynamicform": "*",
-        "rmrevin/yii2-fontawesome": "~2.17"
+        "rmrevin/yii2-fontawesome": "~2.17",
+        "kartik-v/yii2-widget-growl": "*"
     },
     "require-dev": {
         

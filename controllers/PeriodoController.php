@@ -8,13 +8,13 @@ use app\models\SearchPeriodo;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * PeriodoController implements the CRUD actions for Periodo model.
  */
 class PeriodoController extends Controller {
 
-    
     /**
      * @inheritdoc
      */
@@ -61,13 +61,31 @@ class PeriodoController extends Controller {
      */
     public function actionCreate() {
         $model = new Periodo();
+        $model->idPeriodo = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idPeriodo]);
+            if (\Yii::$app->request->isAjax) {
+                return Json::encode([
+                            'status' => 'success',
+                            'div' => "$model->idPeriodo",
+                ]);
+            } else {
+                return $this->redirect(['view', 'id' => $model->idPeriodo]);
+            }
+            
         } else {
-            return $this->render('create', [
-                        'model' => $model,
-            ]);
+            if (\Yii::$app->request->isAjax) {
+                return Json::encode([
+                            'status' => 'failure',
+                            'div' => $this->renderAjax('_form', [
+                                'model' => $model
+                            ])
+                ]);
+            } else {
+                return $this->render('create', [
+                            'model' => $model,
+                ]);
+            }
         }
     }
 

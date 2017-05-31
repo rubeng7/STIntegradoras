@@ -9,6 +9,7 @@ use yii\grid\GridView;
 
 $this->title = 'Carreras';
 $this->params['breadcrumbs'][] = $this->title;
+\app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="carrera-index">
 

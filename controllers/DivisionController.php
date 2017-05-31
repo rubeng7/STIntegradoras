@@ -12,13 +12,12 @@ use yii\filters\VerbFilter;
 /**
  * DivisionController implements the CRUD actions for Division model.
  */
-class DivisionController extends Controller
-{
+class DivisionController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -33,14 +32,13 @@ class DivisionController extends Controller
      * Lists all Division models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new SearchDivision();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -49,10 +47,9 @@ class DivisionController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -61,15 +58,14 @@ class DivisionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Division();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idDivision]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -80,15 +76,14 @@ class DivisionController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idDivision]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -99,9 +94,19 @@ class DivisionController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    public function actionDelete($id) {
+        $division = $this->findModel($id);
+        if (count($division->carreras) > 0) {
+            // Hay carreras en esta division!!
+            \app\models\Utilerias::setFlash('div-del-1', 'No se puede eliminar'
+                    . ' esta división debido a que tiene <b>CARRERAS</b> asociadas', 'Problemas al eliminar', 5000);
+        } elseif (count($division->personas) > 0) {
+            // Hay personas en esta division
+            \app\models\Utilerias::setFlash('div-del-2', 'No se puede eliminar'
+                    . ' esta división debido a que hay <b>PERSONAS</b> relacionadas a ella', 'Problemas al eliminar', 5000);
+        } else {
+            $division->delete();
+        }
 
         return $this->redirect(['index']);
     }
@@ -113,12 +118,12 @@ class DivisionController extends Controller
      * @return Division the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Division::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

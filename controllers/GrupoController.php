@@ -8,6 +8,7 @@ use app\models\SearchGrupo;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Utilerias;
 
 /**
  * GrupoController implements the CRUD actions for Grupo model.
@@ -131,7 +132,22 @@ class GrupoController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $grupo = $this->findModel($id);
+        if(count($grupo->alumnoGrupoPeriodos) > 0) {
+            // Hay alumnos en este grupo!!
+            Utilerias::setFlash('gru-del-1', 'No se puede eliminar este grupo '
+                    . 'porque hay <b>ALUMNOS</b> relacionados', 'Problemas al eliminar', 5000);
+        } elseif(count($grupo->profesorGrupoPeriodos) > 0) {
+            // Hay profesores relacionados a este grupo!!
+            Utilerias::setFlash('gru-del-1', 'No se puede eliminar este grupo '
+                    . 'porque hay <b>PROFESORES</b> relacionados', 'Problemas al eliminar', 5000);
+        } elseif(count($grupo->equipos) > 0) {
+            // Hay equipos en este grupo!!
+            Utilerias::setFlash('gru-del-1', 'No se puede eliminar este grupo '
+                    . 'porque hay <b>EQUIPOS</b> relacionados', 'Problemas al eliminar', 5000);
+        } else {
+            $grupo->delete();
+        }
 
         return $this->redirect(['index']);
     }

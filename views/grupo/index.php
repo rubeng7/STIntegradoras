@@ -10,6 +10,7 @@ use app\models\Grupo;
 
 $this->title = 'Grupos';
 $this->params['breadcrumbs'][] = $this->title;
+\app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="grupo-index">
 
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'idGrupo',
+            //'idGrupo',
             [
                 'attribute' => 'cuatrimestre',
                 'filter' => Html::activeDropDownList($searchModel, 'cuatrimestre', Grupo::ARRAY_CUATRIMESTRES, ['class' => 'form-control', 'prompt' => 'Cualquiera'])

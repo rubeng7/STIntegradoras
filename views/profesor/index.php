@@ -9,6 +9,7 @@ use kartik\grid\GridView;
 
 $this->title = 'Profesores';
 $this->params['breadcrumbs'][] = $this->title;
+\app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="profesor-index">
 

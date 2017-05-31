@@ -8,6 +8,8 @@
 
 namespace app\models;
 
+use Yii;
+
 /**
  * Description of Utilerias
  *
@@ -101,5 +103,36 @@ class Utilerias {
 
         return $keep_key_assoc ? $array : array_values($array);
     }
+    
+    public static function lanzarFlashes() {
+        foreach (Yii::$app->getSession()->getAllFlashes() as $flash) {
+            echo \kartik\growl\Growl::widget([
+                'type' => (!empty($flash['type'])) ? $flash['type'] : \kartik\growl\Growl::TYPE_DANGER,
+                'title' => (!empty($flash['title'])) ? $flash['title'] : 'No hay titulo',
+                'delay' => 1,
+                'icon' => (!empty($flash['icon'])) ? $flash['icon'] : 'glyphicon glyphicon-remove-sign',
+                'body' => (!empty($flash['message'])) ? $flash['message'] : 'No hay mensaje',
+                'showSeparator' => true,
+                'pluginOptions' => [
+                    'delay' => (!empty($flash['duration'])) ? $flash['duration'] : 3000,
+                    'placement' => [
+                        'from' => (!empty($flash['from'])) ? $flash['from'] : 'top',
+                        'align' => (!empty($flash['align'])) ? $flash['align'] : 'right',
+                    ],
+                    'showProgressbar' => true,
+                ]
+            ]);
+        }
+    }
+
+    public static function setFlash($id, $mensaje, $titulo, $duracion) {
+        Yii::$app->session->setFlash($id, [
+            'message' => $mensaje,
+            'title' => $titulo,
+            'duration' => $duracion
+        ]);
+    }
+    
+    
 
 }

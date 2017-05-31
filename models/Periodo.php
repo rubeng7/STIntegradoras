@@ -34,6 +34,7 @@ class Periodo extends \yii\db\ActiveRecord {
             [['mesInicio', 'mesFin', 'anio'], 'required'],
             [['mesInicio', 'mesFin'], 'string'],
             [['anio'], 'integer'],
+            [['mesInicio', 'mesFin', 'anio'], 'unique', 'targetAttribute' => ['mesInicio', 'mesFin', 'anio'], 'message' => 'Esta combinación ya ha sido usada'],
         ];
     }
 

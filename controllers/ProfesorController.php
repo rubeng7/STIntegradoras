@@ -12,6 +12,7 @@ use app\models\Persona;
 use app\models\Usuario;
 use app\models\Model;
 use app\models\ProfesorGrupoPeriodo;
+use app\models\Utilerias;
 
 /**
  * ProfesorController implements the CRUD actions for Profesor model.
@@ -66,7 +67,7 @@ class ProfesorController extends Controller {
         $model = new Profesor();
         $persona = new Persona();
         $usuario = new Usuario();
-        
+
         $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
 
         if ($model->load(Yii::$app->request->post()) &&
@@ -75,7 +76,7 @@ class ProfesorController extends Controller {
 
             $profesorGrupoPeriodos = Model::createMultiple(ProfesorGrupoPeriodo::className());
             Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
-            
+
             foreach ($profesorGrupoPeriodos as $pgp) {
                 $pgp->idProfesor = 1;
             }
@@ -99,7 +100,7 @@ class ProfesorController extends Controller {
                 }
             }
         }
-        
+
         return $this->render('create', [
                     'model' => $model,
                     'persona' => $persona,
@@ -115,62 +116,61 @@ class ProfesorController extends Controller {
      * @return mixed
      */
     public function actionUpdate($id) {
-         $model = Profesor::findOne($id);
-         $usuario = $model->idProfesor0;
-         $persona = $usuario->idUsuario0;
- 
-         
-         $profesorGrupoPeriodos = $model->profesorGrupoPeriodos;
- 
-         if ($model->load(Yii::$app->request->post()) &&
-                 $persona->load(Yii::$app->request->post()) &&
-                 $usuario->load(Yii::$app->request->post())) {
- 
-             $profesorGrupoPeriodosN = Model::createMultiple(ProfesorGrupoPeriodo::className());
-             Model::loadMultiple($profesorGrupoPeriodosN, \Yii::$app->request->post());
- 
-             foreach ($profesorGrupoPeriodosN as $pgp) {
-                 $pgp->idProfesor = $model->idProfesor;
-             }
- 
-             $transaccion = Yii::$app->db->beginTransaction();
- 
-             $profesorGrupoPeriodosOld = array_udiff($profesorGrupoPeriodos, $profesorGrupoPeriodosN, ['app\models\ProfesorGrupoPeriodo', 'compare']);
-             $profesorGrupoPeriodosN = array_udiff($profesorGrupoPeriodosN, $profesorGrupoPeriodos, ['app\models\ProfesorGrupoPeriodo', 'compare']);
- 
-             $profesorGrupoPeriodosN = \app\models\Utilerias::my_array_unique($profesorGrupoPeriodosN);
- 
-             //echo '<script>alert("'. $profesorGrupoPeriodosOld[0]->idGrupo.'");</script>';
-             ProfesorGrupoPeriodo::eliminarMultiple($profesorGrupoPeriodosOld);
- 
-             //validacion ajax
-             if (Yii::$app->request->isAjax) {
-                 Yii::$app->response->format = Response::FORMAT_JSON;
-                 return \yii\helpers\ArrayHelper::merge(
-                                 ActiveForm::validateMultiple($profesorGrupoPeriodosN), ActiveForm::validate($model), ActiveForm::validate($persona), ActiveForm::validate($usuario)
-                 );
-             }
- 
-             // validacion php
-             $valid = $model->validate() && $persona->validate() && $usuario->validate();
-             $valid = Model::validateMultiple($profesorGrupoPeriodosN) && $valid;
- 
-             if ($valid) {
-                 if ($model->registrar($persona, $usuario, $profesorGrupoPeriodosN, false)) {
-                     $transaccion->commit();
-                     return $this->redirect(['view', 'id' => $model->idProfesor]);
-                 }
-             }
-             $transaccion->rollBack();
-          }
- 
-         return $this->render('update', [
-                     'model' => $model,
-                     'persona' => $persona,
-                     'usuario' => $usuario,
-                     'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
-         ]);
-      
+        $model = Profesor::findOne($id);
+        $usuario = $model->idProfesor0;
+        $persona = $usuario->idUsuario0;
+
+
+        $profesorGrupoPeriodos = $model->profesorGrupoPeriodos;
+
+        if ($model->load(Yii::$app->request->post()) &&
+                $persona->load(Yii::$app->request->post()) &&
+                $usuario->load(Yii::$app->request->post())) {
+
+            $profesorGrupoPeriodosN = Model::createMultiple(ProfesorGrupoPeriodo::className());
+            Model::loadMultiple($profesorGrupoPeriodosN, \Yii::$app->request->post());
+
+            foreach ($profesorGrupoPeriodosN as $pgp) {
+                $pgp->idProfesor = $model->idProfesor;
+            }
+
+            $transaccion = Yii::$app->db->beginTransaction();
+
+            $profesorGrupoPeriodosOld = array_udiff($profesorGrupoPeriodos, $profesorGrupoPeriodosN, ['app\models\ProfesorGrupoPeriodo', 'compare']);
+            $profesorGrupoPeriodosN = array_udiff($profesorGrupoPeriodosN, $profesorGrupoPeriodos, ['app\models\ProfesorGrupoPeriodo', 'compare']);
+
+            $profesorGrupoPeriodosN = \app\models\Utilerias::my_array_unique($profesorGrupoPeriodosN);
+
+            //echo '<script>alert("'. $profesorGrupoPeriodosOld[0]->idGrupo.'");</script>';
+            ProfesorGrupoPeriodo::eliminarMultiple($profesorGrupoPeriodosOld);
+
+            //validacion ajax
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return \yii\helpers\ArrayHelper::merge(
+                                ActiveForm::validateMultiple($profesorGrupoPeriodosN), ActiveForm::validate($model), ActiveForm::validate($persona), ActiveForm::validate($usuario)
+                );
+            }
+
+            // validacion php
+            $valid = $model->validate() && $persona->validate() && $usuario->validate();
+            $valid = Model::validateMultiple($profesorGrupoPeriodosN) && $valid;
+
+            if ($valid) {
+                if ($model->registrar($persona, $usuario, $profesorGrupoPeriodosN, false)) {
+                    $transaccion->commit();
+                    return $this->redirect(['view', 'id' => $model->idProfesor]);
+                }
+            }
+            $transaccion->rollBack();
+        }
+
+        return $this->render('update', [
+                    'model' => $model,
+                    'persona' => $persona,
+                    'usuario' => $usuario,
+                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
+        ]);
     }
 
     /**
@@ -180,7 +180,35 @@ class ProfesorController extends Controller {
      * @return mixed
      */
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        $profesor = $this->findModel($id);
+        if (count($profesor->idComites) > 0) {
+            // Este profesor tiene comites relacionados
+            Utilerias::setFlash('pro-del-1', 'El profesor no se pudo eliminar'
+                    . ' debido a que hay <b>COMITES</b> relacionados', Model::MSG_TITLE_FAIL_DEL, 5000);
+        } elseif (count($profesor->profesorGrupoPeriodos)) {
+            // Este profesor tiene grupos relacionados
+            Utilerias::setFlash('pro-del-2', 'El profesor no se pudo eliminar'
+                    . ' debido a que hay <b>GRUPOS</b> relacionados', Model::MSG_TITLE_FAIL_DEL, 5000);
+        } else {
+            // Esta libre el tipo
+            try {
+                $transaccion = Yii::$app->db->beginTransaction();
+                $usuario = $profesor->idProfesor0;
+                $persona = $usuario->idUsuario0;
+                
+                // Proceso de eliminación
+                $profesor->delete();
+                $usuario->delete();
+                $persona->delete();
+                $transaccion->commit();
+                
+            } catch (Exception $ex) {
+                // Ocurrió un error al eliminar el registro
+                $transaccion->rollBack();
+                Utilerias::setFlash('pro-del-3', Model::MSG_ERR_DEL_GEN, Model::MSG_TITLE_FAIL_DEL, 5000);
+            }
+            
+        }
 
         return $this->redirect(['index']);
     }

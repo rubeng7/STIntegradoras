@@ -9,6 +9,7 @@ use yii\grid\GridView;
 
 $this->title = 'Divisiones';
 $this->params['breadcrumbs'][] = $this->title;
+\app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="division-index">
 
@@ -24,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'idDivision',
             'nombre',
             'descripcion',
 

@@ -12,14 +12,14 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'mesInicio')->dropDownList([ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], ['prompt' => '']) ?>
+    <?= $form->field($model, 'mesInicio')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
 
-    <?= $form->field($model, 'mesFin')->dropDownList([ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', ], ['prompt' => '']) ?>
+    <?= $form->field($model, 'mesFin')->dropDownList(\app\models\Utilerias::mapeaMeses(), ['prompt' => '']) ?>
 
     <?= $form->field($model, 'anio')->textInput() ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
