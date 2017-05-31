@@ -52,8 +52,8 @@ class Usuario extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function attributeLabels() {
         return [
             'idUsuario' => 'Id Usuario',
-            'username' => 'Username',
-            'password' => 'Password',
+            'username' => 'Nombre de usuario',
+            'password' => 'Contraseña',
             'rol' => 'Rol',
             'activo' => 'Activo',
         ];

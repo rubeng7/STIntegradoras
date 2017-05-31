@@ -210,7 +210,7 @@ class ProfesorController extends Controller {
             
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

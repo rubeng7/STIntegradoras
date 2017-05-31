@@ -92,16 +92,24 @@ class Periodo extends \yii\db\ActiveRecord {
         return $arrayPeriodos;
     }
 
-    public static function getPeriodoActual() {
-        $mesActual = date("n");
+    /**
+     * 
+     * @param Periodo $periodo
+     */
+    public function isCurrentlyDateInPeriodo() {
+        $mesActual = date("n") - 1;
         $añoActual = date("Y");
+
+        return $mesActual >= $this->mesInicio &&
+                $mesActual <= $this->mesFin &&
+                $añoActual == $this->anio;
     }
 
     public function toString() {
         $mesI = Utilerias::getNombreMes($this->mesInicio);
         $mesF = Utilerias::getNombreMes($this->mesFin);
         $año = $this->anio;
-        
+
         return $mesI . ' - ' . $mesF . ' ' . $año;
     }
 
