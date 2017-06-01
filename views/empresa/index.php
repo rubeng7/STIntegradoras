@@ -9,6 +9,7 @@ use yii\grid\GridView;
 
 $this->title = 'Empresas';
 $this->params['breadcrumbs'][] = $this->title;
+app\models\Utilerias::lanzarFlashes();
 ?>
 <div class="empresa-index">
 
@@ -23,24 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'idEmpresa',
             'nombre',
             'giro',
             'responsable',
             'telefono',
-            [
-                'attribute' => 'direccionCompleta',
-                'label' => 'Dirección',
-                'value' => function ($model, $key, $index, $column) {
-                    $direccion = $model->idDireccion0;
-                    return $direccion->calle . ' ' . $direccion->numero . ' ' .
-                            $direccion->ciudad . ' ' . $direccion->municipio . ' ' .
-                            $direccion->estado . ' CP: ' . $direccion->cp;
-                }
-            ],
-            // 'idDireccion',
-
+            'direccionCompleta',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

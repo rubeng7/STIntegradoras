@@ -42,9 +42,9 @@ class Empresa extends \yii\db\ActiveRecord
         ];
     }
     
-    public function attributes() {
+    /*public function attributes() {
         return array_merge(parent::attributes(), ['direccionCompleta',]);
-    }
+    }*/
 
     /**
      * @inheritdoc
@@ -57,7 +57,8 @@ class Empresa extends \yii\db\ActiveRecord
             'giro' => 'Giro',
             'responsable' => 'Nombre del responsable',
             'telefono' => 'Teléfono',
-            'idDireccion' => 'Dirección',
+            'idDireccion' => 'ID Dirección',
+            'direccionCompleta' => 'Dirección'
         ];
     }
 
@@ -67,6 +68,10 @@ class Empresa extends \yii\db\ActiveRecord
     public function getIdDireccion0()
     {
         return $this->hasOne(Direccion::className(), ['idDireccion' => 'idDireccion']);
+    }
+    
+    public function getDireccionCompleta() {
+        return $this->idDireccion0->toString();
     }
 
     /**

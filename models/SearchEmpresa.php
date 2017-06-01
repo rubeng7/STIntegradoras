@@ -10,13 +10,14 @@ use app\models\Empresa;
 /**
  * SearchEmpresa represents the model behind the search form about `app\models\Empresa`.
  */
-class SearchEmpresa extends Empresa
-{
+class SearchEmpresa extends Empresa {
+
+    public $direccionCompleta;
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['idEmpresa', 'idDireccion'], 'integer'],
             [['nombre', 'giro', 'responsable', 'telefono', 'direccionCompleta',], 'safe'],
@@ -26,8 +27,7 @@ class SearchEmpresa extends Empresa
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,12 +39,8 @@ class SearchEmpresa extends Empresa
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
-        $query = Empresa::find()->select(['empresa.*', 'CONCAT(calle, " ", numero, " ",'
-                . ' ciudad, " ", municipio, " ", estado, " CP:", cp) as direccionCompleta'])
-                ->innerJoinWith('idDireccion0');
-        
+    public function search($params) {
+        $query = Empresa::find();
 
         // add conditions that should always apply here
 
@@ -52,27 +48,44 @@ class SearchEmpresa extends Empresa
             'query' => $query,
         ]);
 
-        $this->load($params);
+        /**
+         * Setup your sorting attributes
+         * Note: This is setup before the $this->load($params) 
+         * statement below
+         */
+        $dataProvider->setSort([
+            'attributes' => [
+                'nombre',
+                'giro',
+                'responsable',
+                'telefono',
+                'direccionCompleta' => [
+                    'asc' => ["CONCAT(calle, ' ', numero, ' ', ciudad, ' ', municipio, ' ', estado, ' CP:', cp)" => SORT_ASC],
+                    'desc' => ["CONCAT(calle, ' ', numero, ' ', ciudad, ' ', municipio, ' ', estado, ' CP:', cp)" => SORT_DESC],
+                    'label' => 'Dirección',
+                    'default' => SORT_ASC
+                ],
+            ]
+        ]);
 
-        if (!$this->validate()) {
+        if (!($this->load($params) && $this->validate())) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
+            $query->joinWith(['idDireccion0']);
             return $dataProvider;
         }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'idEmpresa' => $this->idEmpresa,
-        ]);
-
-        $direccionB = $this->idDireccion0;
-        
         $query->andFilterWhere(['like', 'nombre', $this->nombre])
-            ->andFilterWhere(['like', 'giro', $this->giro])
-            ->andFilterWhere(['like', 'responsable', $this->responsable])
-            ->andFilterWhere(['like', 'telefono', $this->telefono])
-            ->andFilterWhere(['like', 'direccionCompleta', $this->direccionCompleta]);
+                ->andFilterWhere(['like', 'giro', $this->giro])
+                ->andFilterWhere(['like', 'responsable', $this->responsable])
+                ->andFilterWhere(['like', 'telefono', $this->telefono]);
+
+        $query->joinWith(['idDireccion0' => function ($q) {
+                $q->where("CONCAT(calle, ' ', numero, ' ', ciudad, ' ', municipio, ' ', estado, ' CP:', cp) LIKE '%" .
+                        $this->direccionCompleta . "%'");
+            }]);
 
         return $dataProvider;
     }
+
 }

@@ -95,11 +95,13 @@ class ComiteController extends Controller {
      */
     private function registrar($model, $periodo) {
         
+        // Inicialización de variables autoincrementales
         if($model->isNewRecord){
             $model->idComite = 0;
             $periodo->idPeriodo = 0;
         }
         
+        // Utilización de periodos existentes
         $peridoExist = Periodo::find()->where(['mesInicio' => $periodo->mesInicio, 'mesFin' => $periodo->mesFin, 'anio' => $periodo->anio])->one();
         if($peridoExist != null) {
             $periodo = $peridoExist;

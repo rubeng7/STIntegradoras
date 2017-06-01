@@ -17,21 +17,19 @@ use Yii;
  *
  * @property Empresa[] $empresas
  */
-class Direccion extends \yii\db\ActiveRecord
-{
+class Direccion extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'direccion';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['calle', 'numero', 'ciudad', 'municipio', 'estado'], 'required'],
             [['numero', 'cp'], 'integer'],
@@ -44,8 +42,7 @@ class Direccion extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'idDireccion' => 'Id Direccion',
             'calle' => 'Calle',
@@ -60,8 +57,14 @@ class Direccion extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmpresas()
-    {
+    public function getEmpresas() {
         return $this->hasMany(Empresa::className(), ['idDireccion' => 'idDireccion']);
     }
+
+    public function toString() {
+        return $this->calle . ' ' . $this->numero . ' ' .
+                $this->ciudad . ' ' . $this->municipio . ' ' .
+                $this->estado . ' CP: ' . $this->cp;
+    }
+
 }
