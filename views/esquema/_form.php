@@ -11,6 +11,9 @@ use yii\widgets\ActiveForm;
 <div class="esquema-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos del Esquema</h4></div>
+        <div class="panel panel-body">
 
     <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
 
@@ -21,6 +24,9 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'fechaCreacion')->textInput() ?>
 
     <?= $form->field($model, 'idCarrera')->textInput() ?>
+            
+            </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

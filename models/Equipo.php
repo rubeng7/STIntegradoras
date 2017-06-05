@@ -54,7 +54,7 @@ class Equipo extends \yii\db\ActiveRecord
     }
     
     public function attributes() {
-        return array_merge(parent::attributes(), ['idGrupo0.idCarrera0.nombre', 'idGrupo0.idCarrera0.idCarrera','idPeriodo0.idPeriodo',]);
+        return array_merge(parent::attributes(), ['nombreCompletoGrupo', 'idGrupo0.idCarrera0.nombre', 'idGrupo0.idCarrera0.idCarrera','idPeriodo0.idPeriodo',]);
     }
 
     /**

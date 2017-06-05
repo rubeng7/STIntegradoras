@@ -11,6 +11,9 @@ use yii\widgets\ActiveForm;
 <div class="equipo-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos del Equipo</h4></div>
+        <div class="panel panel-body">
 
     <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
 
@@ -23,6 +26,9 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'idEsquema')->textInput() ?>
 
     <?= $form->field($model, 'idComite')->textInput() ?>
+            
+             </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -39,10 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->idPeriodo0->toString();
         
                 },
+                        'filter' => Html::activeDropDownList($searchModel, 'idPeriodo', app\models\Periodo ::mapeaPeriodos(), ['class' => 'form-control', 'prompt' => 'Cualquiera'])
             ],
             [
                 'label' => 'Grupo',
-                'attribute' => 'idGrupo',
+                'attribute' => 'nombreCompletoGrupo',
                 'value' => function($model, $key, $index, $grid){
                     return $model->idGrupo0->toString();
         

@@ -11,10 +11,16 @@ use yii\widgets\ActiveForm;
 <div class="alumno-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos del Alumno</h4></div>
+        <div class="panel panel-body">
 
     <?= $form->field($model, 'idAlumno')->textInput() ?>
 
     <?= $form->field($model, 'matricula')->textInput(['maxlength' => true]) ?>
+            
+            </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

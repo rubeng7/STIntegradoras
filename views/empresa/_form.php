@@ -12,6 +12,11 @@ use yii\widgets\ActiveForm;
 <div class="empresa-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    
+     <div class="panel panel-primary">
+        <div class="panel panel-heading"><h4>Datos de la Empresa</h4></div>
+        <div class="panel panel-body">
+
 
     <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
 
@@ -32,6 +37,9 @@ use yii\widgets\ActiveForm;
     <?= $form->field($direccion, 'estado')->textInput(['maxlength' => true]) ?>
     
     <?= $form->field($direccion, 'cp')->textInput() ?>
+    
+        </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
