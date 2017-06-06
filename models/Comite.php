@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\Utilerias;
 
 /**
  * This is the model class for table "comite".
@@ -11,38 +12,38 @@ use Yii;
  * @property string $nombre
  * @property string $descripcion
  * @property integer $idPeriodo
+ * @property integer $idDivision
  *
+ * @property Division $idDivision0
  * @property Periodo $idPeriodo0
  * @property ComiteProfesor[] $comiteProfesors
  * @property Profesor[] $idProfesors
  * @property Equipo[] $equipos
  */
-class Comite extends \yii\db\ActiveRecord
-{
+class Comite extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'comite';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['nombre', 'idPeriodo'], 'required'],
-            [['idPeriodo'], 'integer'],
+            [['nombre', 'idPeriodo', 'idDivision'], 'required'],
+            [['idPeriodo', 'idDivision'], 'integer'],
             [['nombre'], 'string', 'max' => 50],
             [['descripcion'], 'string', 'max' => 255],
             [['nombre', 'idPeriodo'], 'unique', 'targetAttribute' => ['nombre', 'idPeriodo'], 'message' => 'The combination of Nombre and Id Periodo has already been taken.'],
+            [['idDivision'], 'exist', 'skipOnError' => true, 'targetClass' => Division::className(), 'targetAttribute' => ['idDivision' => 'idDivision']],
             [['idPeriodo'], 'exist', 'skipOnError' => true, 'targetClass' => Periodo::className(), 'targetAttribute' => ['idPeriodo' => 'idPeriodo']],
         ];
     }
-    
-    
+
     public function attributes() {
         return array_merge(parent::attributes(), ['periodoC',]);
     }
@@ -50,47 +51,96 @@ class Comite extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'idComite' => 'ID',
             'nombre' => 'Nombre',
             'descripcion' => 'Descripción',
             'idPeriodo' => 'Periodo',
+            'idDivision' => 'Division',
         ];
     }
-    
-    
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdPeriodo0()
+    public function getIdDivision0()
     {
+        return $this->hasOne(Division::className(), ['idDivision' => 'idDivision']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdPeriodo0() {
         return $this->hasOne(Periodo::className(), ['idPeriodo' => 'idPeriodo']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getComiteProfesors()
-    {
+    public function getComiteProfesors() {
         return $this->hasMany(ComiteProfesor::className(), ['idComite' => 'idComite']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdProfesors()
-    {
+    public function getIdProfesors() {
         return $this->hasMany(Profesor::className(), ['idProfesor' => 'idProfesor'])->viaTable('comite_profesor', ['idComite' => 'idComite']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEquipos()
-    {
+    public function getEquipos() {
         return $this->hasMany(Equipo::className(), ['idComite' => 'idComite']);
     }
+
+    /**
+     * 
+     * @param Comite $this
+     * @param \app\models\Periodo $periodo
+     * @param \app\models\ComiteProfesor[] $comiteProfesores
+     * @return mixed
+     */
+    public function registrar($comiteProfesores, $validar = true) {
+
+        // Inicialización de variables autoincrementales
+        if ($this->isNewRecord) {
+            $this->idComite = 0;
+        }
+        
+        // Inicia transacción
+        $transaccion = Yii::$app->db->beginTransaction();
+
+        if ($this->save()) {
+            $todoBien = true;
+            foreach ($comiteProfesores as $cp) {
+                $cp->idComite = $this->idComite;
+                $cp->idProfesor0->enComite = true;
+                if (!$cp->save($validar)) {
+                    $todoBien = false;
+                    break;
+                }
+            }
+            if ($todoBien) {
+                $transaccion->commit();
+                return true;
+            } else {
+                // Lanzar alertas
+                Utilerias::setFlash('com-reg-1', Model::MSG_ERR_REG_GEN .
+                        'Error al relacionar profesores con el comité', Model::MSG_TITLE_FAIL_REG, 5000);
+                $transaccion->rollBack();
+                return false;
+            }
+        } else {
+            // Lanzar alertas
+            Utilerias::setFlash('com-reg-2', Model::MSG_ERR_REG_GEN .
+                    'Error al registrar el comité', Model::MSG_TITLE_FAIL_REG, 5000);
+            $transaccion->rollBack();
+            return false;
+        }
+    }
+
 }

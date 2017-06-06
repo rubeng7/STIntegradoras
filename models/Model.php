@@ -6,8 +6,10 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 class Model extends yii\base\Model {
-    const MSG_TITLE_FAIL_DEL = 'Problemas al elimianr';
+    const MSG_TITLE_FAIL_DEL = 'Problemas al eliminar';
     const MSG_ERR_DEL_GEN = 'Ocurrió un error al eliminar el registro. Inténtelo de nuevo';
+    const MSG_ERR_REG_GEN = 'Ocurrió un error al crear el registro. ';
+    const MSG_TITLE_FAIL_REG = 'Problemas al registrar';
 
     /**
      * Creates and populates a set of models.

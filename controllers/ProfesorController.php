@@ -47,6 +47,16 @@ class ProfesorController extends Controller {
         ]);
     }
 
+    public function actionSelect() {
+        $searchModel = new SearchProfesor();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->renderAjax('indexModal', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
     /**
      * Displays a single Profesor model.
      * @param integer $id
@@ -56,6 +66,26 @@ class ProfesorController extends Controller {
         return $this->render('view', [
                     'model' => $this->findModel($id),
         ]);
+    }
+    
+    public function actionViewModal($id) {
+        if ($id == 0) {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $id,
+                        'tipo' => 1
+            ]);
+        } else {
+            echo $this->renderAjax('viewModal', [
+                        'model' => $this->findModel($id),
+                        'tipo' => 2
+            ]);
+        }
+    }
+    
+    public function actionGetDatos($id) {
+        $profesor = Profesor::findOne($id);
+        return $profesor->nivelEstudios.' '.$profesor->idProfesor0->idUsuario0->toString();
+        
     }
 
     /**
@@ -67,6 +97,8 @@ class ProfesorController extends Controller {
         $model = new Profesor();
         $persona = new Persona();
         $usuario = new Usuario();
+        
+        $usuario->rol = "Profesor";
 
         $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
 
@@ -76,10 +108,6 @@ class ProfesorController extends Controller {
 
             $profesorGrupoPeriodos = Model::createMultiple(ProfesorGrupoPeriodo::className());
             Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
-
-            foreach ($profesorGrupoPeriodos as $pgp) {
-                $pgp->idProfesor = 1;
-            }
 
             //validacion ajax
             if (Yii::$app->request->isAjax) {
@@ -99,6 +127,8 @@ class ProfesorController extends Controller {
                     return $this->redirect(['view', 'id' => $model->idProfesor]);
                 }
             }
+            
+            
         }
 
         return $this->render('create', [
@@ -119,7 +149,7 @@ class ProfesorController extends Controller {
         $model = Profesor::findOne($id);
         $usuario = $model->idProfesor0;
         $persona = $usuario->idUsuario0;
-
+        
 
         $profesorGrupoPeriodos = $model->profesorGrupoPeriodos;
 
@@ -195,19 +225,17 @@ class ProfesorController extends Controller {
                 $transaccion = Yii::$app->db->beginTransaction();
                 $usuario = $profesor->idProfesor0;
                 $persona = $usuario->idUsuario0;
-                
+
                 // Proceso de eliminación
                 $profesor->delete();
                 $usuario->delete();
                 $persona->delete();
                 $transaccion->commit();
-                
             } catch (Exception $ex) {
                 // Ocurrió un error al eliminar el registro
                 $transaccion->rollBack();
                 Utilerias::setFlash('pro-del-3', Model::MSG_ERR_DEL_GEN, Model::MSG_TITLE_FAIL_DEL, 5000);
             }
-            
         }
 
         return $this->redirect(Yii::$app->request->referrer);

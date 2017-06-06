@@ -18,8 +18,8 @@ class SearchComite extends Comite
     public function rules()
     {
         return [
-            [['idComite', 'idPeriodo'], 'integer'],
-            [['nombre', 'descripcion', 'periodoC'], 'safe'],
+            [['idComite', 'idPeriodo', 'idDivision'], 'integer'],
+            [['nombre', 'descripcion', 'periodoC', 'idDivision'], 'safe'],
         ];
     }
 
@@ -61,6 +61,7 @@ class SearchComite extends Comite
         $query->andFilterWhere([
             'idComite' => $this->idComite,
             'idPeriodo' => $this->idPeriodo,
+            'idDivision' => $this->idDivision
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre])

@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Periodo;
 use app\models\Utilerias;
+use app\models\Model;
 
 /**
  * ComiteController implements the CRUD actions for Comite model.
@@ -88,58 +89,44 @@ class ComiteController extends Controller {
     }
 
     /**
-     * 
-     * @param Comite $model
-     * @param \app\models\Periodo $periodo
-     * @return mixed
-     */
-    private function registrar($model, $periodo) {
-        
-        // Inicialización de variables autoincrementales
-        if($model->isNewRecord){
-            $model->idComite = 0;
-            $periodo->idPeriodo = 0;
-        }
-        
-        // Utilización de periodos existentes
-        $peridoExist = Periodo::find()->where(['mesInicio' => $periodo->mesInicio, 'mesFin' => $periodo->mesFin, 'anio' => $periodo->anio])->one();
-        if($peridoExist != null) {
-            $periodo = $peridoExist;
-        }
-        
-        $transaccion = Yii::$app->db->beginTransaction();
-        
-        if($periodo->save()){
-            $model->idPeriodo = $periodo->idPeriodo;
-            if($model->save()){
-                $transaccion->commit();
-                return $this->redirect(['view', 'id' => $model->idComite]);
-            } else {
-                // Lanzar alertas
-                $transaccion->rollBack();
-            }
-        } else {
-            // Lanzar alertas
-            $transaccion->rollBack();
-        }
-        
-    }
-
-    /**
      * Creates a new Comite model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate() {
         $model = new Comite();
-        $periodo = new Periodo();
+        
+        $comiteProfesores = [new \app\models\ComiteProfesor()];
 
-        if ($model->load(Yii::$app->request->post()) && $periodo->load(Yii::$app->request->post())) {
-            $this->registrar($model, $periodo);
+        if ($model->load(Yii::$app->request->post())) {
+            
+            $comiteProfesores = Model::createMultiple(\app\models\ComiteProfesor::className());
+            Model::loadMultiple($comiteProfesores, \Yii::$app->request->post());
+            
+            //validacion ajax
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return \yii\helpers\ArrayHelper::merge(
+                                ActiveForm::validateMultiple($comiteProfesores), ActiveForm::validate($model)
+                );
+            }
+
+            // validacion php
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($comiteProfesores) && $valid;
+
+            if ($valid) {
+                if($model->registrar($comiteProfesores, false)) {
+                    return $this->redirect(['view', 'id' => $model->idComite]);
+                }
+            } else {
+                Utilerias::setFlash('com-reg-1', 'Ocurrió un error de validación. Revisa el formulario', 'Problema de validación', 5000);
+            }
         }
+        
         return $this->render('create', [
                     'model' => $model,
-                    'periodo' => $periodo
+                    'comiteProfesores' => $comiteProfesores
         ]);
     }
 

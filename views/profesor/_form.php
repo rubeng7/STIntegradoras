@@ -10,6 +10,7 @@ use yii\bootstrap\Modal;
 /* @var $persona app\models\Persona */
 /* @var $usuario app\models\Usuario */
 /* @var $form yii\widgets\ActiveForm */
+app\models\Utilerias::lanzarFlashes();
 ?>
 
 <div class="profesor-form">

@@ -29,7 +29,7 @@ class ComiteProfesor extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idComite', 'idProfesor'], 'required'],
+            [['idProfesor'], 'required'],
             [['idComite', 'idProfesor'], 'integer'],
             [['idComite'], 'exist', 'skipOnError' => true, 'targetClass' => Comite::className(), 'targetAttribute' => ['idComite' => 'idComite']],
             [['idProfesor'], 'exist', 'skipOnError' => true, 'targetClass' => Profesor::className(), 'targetAttribute' => ['idProfesor' => 'idProfesor']],

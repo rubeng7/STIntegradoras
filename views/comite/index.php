@@ -25,7 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'idComite',
+            //'idComite',
+            [
+                'attribute' => 'idDivision',
+                'value' => function($model, $key, $index, $grid){
+                    return $model->idDivision0->nombre;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'idDivision', \app\models\Division ::listaDivisionesCombo(), ['class' => 'form-control', 'prompt' => 'Cualquiera'])
+                
+            ],
             'nombre',
             'descripcion',
             [

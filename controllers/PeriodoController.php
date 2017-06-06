@@ -61,7 +61,7 @@ class PeriodoController extends Controller {
      */
     public function actionCreate() {
         $model = new Periodo();
-        $model->idPeriodo = 0;
+        //$model->idPeriodo = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             if (\Yii::$app->request->isAjax) {

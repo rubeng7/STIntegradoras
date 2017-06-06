@@ -31,7 +31,7 @@ class ProfesorGrupoPeriodo extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idProfesor', 'idGrupo', 'idPeriodo'], 'required'],
+            [['idGrupo', 'idPeriodo'], 'required'],
             [['idProfesor', 'idGrupo', 'idPeriodo'], 'integer'],
             [['idProfesor'], 'exist', 'skipOnError' => true, 'targetClass' => Profesor::className(), 'targetAttribute' => ['idProfesor' => 'idProfesor']],
             [['idGrupo'], 'exist', 'skipOnError' => true, 'targetClass' => Grupo::className(), 'targetAttribute' => ['idGrupo' => 'idGrupo']],

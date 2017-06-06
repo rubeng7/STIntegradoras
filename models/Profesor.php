@@ -134,5 +134,9 @@ class Profesor extends \yii\db\ActiveRecord {
             return false;
         }
     }
+    
+    public function toString() {
+        return $this->nivelEstudios . ' ' . $this->idProfesor0->idUsuario0->toString();
+    }
 
 }
