@@ -95,7 +95,7 @@ app\models\Utilerias::lanzarFlashes();
                                         <div class="detalles"></div>
                                     </td>
                                     <td align="center" class="vcenter">
-                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos())->label('') ?></div>
+                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos(), ['prompt' => ''])->label('') ?></div>
                                     </td>
                                     <td class="text-center vcenter">
                                         <div onclick="eliminarUnicoRegistro()" style="display:inline-block"><button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button></div>
@@ -145,7 +145,7 @@ app\models\Utilerias::lanzarFlashes();
     ]);
     echo '<div id="divModalGrupos"></div>';
     Modal::end();
-    
+
     Modal::begin([
         'header' => '<h3 align=center>Nuevo periodo</h3>',
         'id' => 'modalPeriodo',
@@ -153,6 +153,7 @@ app\models\Utilerias::lanzarFlashes();
     ]);
     echo '<div id="divNewPeriodo"></div>';
     Modal::end();
+
 
     $js = '
         
@@ -233,7 +234,17 @@ app\models\Utilerias::lanzarFlashes();
                     $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id="+id);
                     //$(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+id);
                 }
-                $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos");
+                
+                // Obtención del option seleccionado
+                var selectedOption = $(this).find(".divComboPeriodo select :selected").val();
+                
+                // Carga de los nuevos options al select
+                $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos", function() {
+                    // Restablecer selección del option
+                    $(".divComboPeriodo select").val(selectedOption);
+                });
+                
+                
             });
         }
         

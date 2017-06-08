@@ -124,7 +124,8 @@ class PeriodoController extends Controller {
      * @param \app\models\Grupo $id
      */
     public function actionCargaComboDependiente($id) {
-        $stringOptions = "";
+        $stringOptions = "<option value=''></option>";
+        
 
         if ($id == "todos") {
             $periodos = \app\models\Periodo::find()->orderBy('mesInicio DESC, anio DESC')->all();

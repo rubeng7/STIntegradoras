@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'especialidad',
             [
                 'atribute' => 'enComite',
-                'label' => 'Pertenece a algún comité',
+                'label' => 'Pertenece o ha pertenecido a algún comité',
                 'value' => $model->enComite == 1 ?
                         '<span class="glyphicon glyphicon-ok text-success"></span>' :
                         '<span class="glyphicon glyphicon-remove text-danger"></span>',
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'atribute' => 'enIntegradora',
-                'label' => 'Ha impartido la clase de tarea integradora',
+                'label' => 'Imparte o ha impartido la clase de tarea integradora',
                 'value' => $model->enIntegradora == 1 ?
                         '<span class="glyphicon glyphicon-ok text-success"></span>' :
                         '<span class="glyphicon glyphicon-remove text-danger"></span>',

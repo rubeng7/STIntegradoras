@@ -98,17 +98,29 @@ class Profesor extends \yii\db\ActiveRecord {
      * @return bool
      */
     public function registrar($persona, $usuario, $profesorGrupoPeriodos, $validar) {
+        // Inicio de una transacción
         $transaccion = \Yii::$app->db->beginTransaction();
+
         try {
+            // Intentar registrar al usuario
             if ($usuario->registrar($persona, $validar)) {
+
+                // Asignar id al profesor
                 $this->idProfesor = $usuario->idUsuario;
 
+                // Intentar guardar el profesor
                 if ($this->save($validar)) {
+
+                    // Variable de guardia
                     $guardoPgp = true;
 
+                    // Verificar si el profesor es un profesor de integradora
                     if ($this->enIntegradora == 1) {
-                        //ProfesorGrupoPeriodo::deleteAll(['idProfesor' => $this->idProfesor]);
+
+                        // Recorrer el arreglo de profesores grupos periodos
                         foreach ($profesorGrupoPeriodos as $pgp) {
+
+                            // Asignar id e intentar guardar el ProfesorGrupoPeriodo
                             $pgp->idProfesor = $this->idProfesor;
                             if (!$pgp->save($validar)) {
                                 $guardoPgp = false;
@@ -117,24 +129,46 @@ class Profesor extends \yii\db\ActiveRecord {
                         }
                     }
 
+                    // Verificar si todo se realizo bien
                     if ($guardoPgp) {
+                        // Todo salio bien, hacer commit
                         $transaccion->commit();
                     } else {
+                        // Algo salio mal, hacer rollBack
                         $transaccion->rollBack();
+                        Utilerias::setFlash('pro-reg-1', Model::MSG_ERR_REG_GEN
+                                . ' Error al guardar la relación entre el'
+                                . ' profesor y los grupos', Model::MSG_TITLE_FAIL_REG, 5000);
                     }
 
+                    // Retornar el valor del guardia, true or false
                     return $guardoPgp;
+                } else {
+                    // No se pudo guardar al profesor
+                    Utilerias::setFlash('pro-reg-2', Model::MSG_ERR_REG_GEN
+                            . ' Error al guardar el profesor', Model::MSG_TITLE_FAIL_REG, 5000);
                 }
+            } else {
+                // No se pudo guardar al usuario
+                Utilerias::setFlash('pro-reg-3', Model::MSG_ERR_REG_GEN
+                        . ' Error al guardar el usuario', Model::MSG_TITLE_FAIL_REG, 5000);
             }
+
+            /*
+             * Si ha llegado aqui quiere decir que algo salio mal con el usuario
+             * o el profesor. Retornar false. (Los mensajes de alerta ya fueron
+             * lanzados)
+             */
             $transaccion->rollBack();
             return false;
         } catch (Exception $ex) {
+            // Ocurrio un error inesperado. Hacer rollback y devolver false
             $transaccion->rollBack();
-            throwException($exception);
+            throwException($ex);
             return false;
         }
     }
-    
+
     public function toString() {
         return $this->nivelEstudios . ' ' . $this->idProfesor0->idUsuario0->toString();
     }
