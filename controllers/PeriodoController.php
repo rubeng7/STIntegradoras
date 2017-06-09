@@ -72,7 +72,6 @@ class PeriodoController extends Controller {
             } else {
                 return $this->redirect(['view', 'id' => $model->idPeriodo]);
             }
-            
         } else {
             if (\Yii::$app->request->isAjax) {
                 return Json::encode([
@@ -124,18 +123,17 @@ class PeriodoController extends Controller {
      * @param \app\models\Grupo $id
      */
     public function actionCargaComboDependiente($id) {
-        $stringOptions = "<option value=''></option>";
+        $stringOptions = "<option value='null' selected></option>";
         
-
         if ($id == "todos") {
             $periodos = \app\models\Periodo::find()->orderBy('mesInicio DESC, anio DESC')->all();
             foreach ($periodos as $periodo) {
                 $stringOptions .= "<option value='$periodo->idPeriodo'>" . $periodo->toString() . "</option>";
             }
-        } else {
-            $alumnoGrupoPeriodos = \app\models\Grupo::findOne($id)->alumnoGrupoPeriodos;
-            foreach ($alumnoGrupoPeriodos as $profGrupPeriodo) {
-                $stringOptions .= "<option value='$profGrupPeriodo->idPeriodo'>" . $profGrupPeriodo->idPeriodo0->toString() . "</option>";
+        } elseif ($id == "unico") {
+            $periodo = Periodo::getPeriodoActualRegistrado();
+            if($periodo != null) {
+                $stringOptions .= "<option value='$periodo->idPeriodo'>" . $periodo->toString() . "</option>";
             }
         }
 

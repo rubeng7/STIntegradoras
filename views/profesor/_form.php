@@ -11,6 +11,10 @@ use yii\bootstrap\Modal;
 /* @var $usuario app\models\Usuario */
 /* @var $form yii\widgets\ActiveForm */
 app\models\Utilerias::lanzarFlashes();
+
+$sin_grupos_en_edicion = count($profesorGrupoPeriodos) == 1 &&
+        $profesorGrupoPeriodos[0]->isNewRecord &&
+        !$model->isNewRecord;
 ?>
 
 <div class="profesor-form">
@@ -41,8 +45,68 @@ app\models\Utilerias::lanzarFlashes();
         <div class="panel panel-heading"><h4>Referente a los grupos</h4></div>
         <div class="panel panel-body" style="padding: 1%">
             <div style="display: none"><?= $form->field($model, 'enIntegradora')->checkbox()->label('') ?></div>
-            <p>Registros duplicados serán ignorados</p>
-            <div id="divGrupos">
+            <div class="alert alert-warning">
+                La tabla inferior muestra los grupos relacionados a este profesor en periodos
+                anteriores. NO PUEDES EDITARLOS.
+
+                Debajo puedes ver los grupos relacionados al profesor en el periodo actual.
+                PUEDES EDITARLOS.
+            </div>
+
+            <?php if (!$model->isNewRecord) { ?>
+
+                <table class="table table-bordered table-responsive table-striped margin-b-none">
+                    <thead>
+                        <tr>
+                            <th>División</th>
+                            <th>Carrera</th>
+                            <th>Grupo</th>
+                            <th>Periodo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($profesorGrupoPeriodosAnteriores as $i => $pgp) : ?>
+                            <tr>
+                                <td><?= $pgp->idGrupo0->idCarrera0->idDivision0->nombre ?></td>
+                                <td><?= $pgp->idGrupo0->idCarrera0->nombre ?></td>
+                                <td><?= $pgp->idGrupo0->toString() ?></td>
+                                <td><?= $pgp->idPeriodo0->toString() ?></td>
+                            </tr>
+
+                            <?php
+                        endforeach;
+                        if (count($profesorGrupoPeriodosAnteriores) == 0) {
+                            ?>
+                            <tr>
+                                <td colspan="3">No se ha encontrado ningún grupo relacionado con este profesor en periodos anteriores al actual</td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
+                <br/>
+
+            <?php } ?>
+
+            <br/>
+            <div id="panel-no-grupos" class="panel panel-warning" style="display: <?= ($sin_grupos_en_edicion) ? 'auto' : 'none' ?>">
+                <div class="panel panel-heading"><h4>Grupos para el periodo actual</h4></div>
+                <div class="panel panel-body" style="padding: 1%;" align="center" >
+                    <p>No hay grupos relacionados a este profesor en este periodo</p>
+                    <?=
+                    Html::button('Quiero agregar algunos', [
+                        'class' => 'btn btn-default',
+                        'id' => 'btn-add-more-items',
+                        'onclick' => 'añadirGrupos();'
+                            ]
+                    )
+                    ?>
+                </div>
+            </div>
+            <div id="divGrupos" style="display: <?= !$sin_grupos_en_edicion ? 'auto' : 'none' ?>">
+                <div class="alert alert-mensaje">Registros duplicados serán ignorados</div>
                 <?php
                 rmrevin\yii\fontawesome\AssetBundle::register($this);
                 DynamicFormWidget::begin([
@@ -62,7 +126,19 @@ app\models\Utilerias::lanzarFlashes();
                 ]);
                 ?>
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h4><i class="fa fa-clone"></i> Grupos</h4></div>
+                    <div class="panel-heading">
+                        <div style="display:inline-block; width: 70%"><h4><i class="fa fa-clone"></i> Grupos</h4></div>
+                        <div style="display:inline-block;">
+                            <?php
+                            if (!$model->isNewRecord && count($profesorGrupoPeriodosAnteriores) > 0) {
+                                echo Html::button('Borrar grupos de este periodo', [
+                                    'class' => 'btn btn-danger',
+                                    'align' => 'right',
+                                    'onclick' => 'borrarGrupos();'
+                                ]);
+                            }
+                            ?></div>
+                    </div>
                     <table class="table table-bordered table-responsive table-striped margin-b-none">
                         <thead>
                             <tr>
@@ -85,7 +161,13 @@ app\models\Utilerias::lanzarFlashes();
                                 <tr class="form-options-item">
                                     <td class="col-xs-1">
                                         <?php
-                                        echo $form->field($profesorGrup, "[$i]idGrupo")->textInput(['readonly' => true, 'class' => 'form-control filas'])->label('');
+                                        echo $form->field($profesorGrup, "[$i]idGrupo")->textInput(
+                                                [
+                                                    'readonly' => true,
+                                                    'class' => 'form-control filas',
+                                                    'disabled' => $sin_grupos_en_edicion
+                                                ]
+                                        )->label('');
                                         ?>
                                     </td>
                                     <td class="vcenter celdaNombre" align="center">
@@ -95,7 +177,15 @@ app\models\Utilerias::lanzarFlashes();
                                         <div class="detalles"></div>
                                     </td>
                                     <td align="center" class="vcenter">
-                                        <div class="divComboPeriodo"><?= $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos(), ['prompt' => ''])->label('') ?></div>
+                                        <div class="divComboPeriodo"><?=
+                                            $form->field($profesorGrup, "[$i]idPeriodo", [])->dropDownList(app\models\Periodo::mapeaPeriodos(true), [
+                                                'prompt' => [
+                                                    'text' => '',
+                                                    'options' => ['value' => 'null']
+                                                ],
+                                                'disabled' => $sin_grupos_en_edicion
+                                            ])->label('')
+                                            ?></div>
                                     </td>
                                     <td class="text-center vcenter">
                                         <div onclick="eliminarUnicoRegistro()" style="display:inline-block"><button type="button" class="delete-item btn btn-danger btn-xs"><span class="fa fa-minus"></span></button></div>
@@ -157,6 +247,24 @@ app\models\Utilerias::lanzarFlashes();
 
     $js = '
         
+        function borrarGrupos() {
+            $("#divGrupos").hide();
+            $("#panel-no-grupos").show();
+            $("#divGrupos input").prop("disabled", "disabled");   
+            $("#divGrupos select").prop("disabled", "disabled");
+        }
+        
+        function añadirGrupos() {
+            $("#panel-no-grupos").hide();
+            $("#divGrupos").show();
+            activarCampos();
+        }
+        
+        function activarCampos() {
+            $("#divGrupos input").prop("disabled", false);   
+            $("#divGrupos select").prop("disabled", false);
+        }
+        
         // CORRECCIONES DE ESTILO
         
         $("#modalGrupos .modal-dialog").css("width", "90%");
@@ -171,8 +279,6 @@ app\models\Utilerias::lanzarFlashes();
                 var $filas = $("#divGrupos .filas");
                 var tam = $filas.size();
                 $filas[tam -1].value = id;
-                //$("#divGrupos #add-item-2").attr("style", "display:none");
-                //$("#divGrupos .add-item").attr("style", "display:auto");
                 detallesGrupos();
                 $("#modalGrupos").modal("hide");
             }
@@ -226,26 +332,25 @@ app\models\Utilerias::lanzarFlashes();
                 
                 if(id == null || id == "") {
                     $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id=0");
-                    $(this).find(".celdaNombre").html("No se ha seleccionado un grupo");                    
-                    //$("#divGrupos #add-item-2").attr("style", "display:auto");
-                    //$("#divGrupos .add-item").attr("style", "display:none");
+                    $(this).find(".celdaNombre").html("No se ha seleccionado un grupo");
+                    $("#profesorgrupoperiodo-"+index+"-idperiodo").val(null);
                 } else {
                     $(this).find(".celdaNombre").load("' . \yii\helpers\Url::toRoute(['grupo/get-datos']) . '?"+"id="+id);
                     $(this).find(".detalles").load("' . \yii\helpers\Url::toRoute(['grupo/view-modal']) . '?"+"id="+id);
-                    //$(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+id);
                 }
                 
                 // Obtención del option seleccionado
-                var selectedOption = $(this).find(".divComboPeriodo select :selected").val();
+                var selectedOption = $("#profesorgrupoperiodo-"+index+"-idperiodo").val();
                 
                 // Carga de los nuevos options al select
-                $(this).find(".divComboPeriodo").find("select").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"todos", function() {
-                    // Restablecer selección del option
-                    $(".divComboPeriodo select").val(selectedOption);
+                $("#profesorgrupoperiodo-"+index+"-idperiodo").load("' . \yii\helpers\Url::toRoute(['periodo/carga-combo-dependiente']) . '?"+"id="+"unico", function() {
+                    $("#profesorgrupoperiodo-"+index+"-idperiodo").val(selectedOption);
                 });
-                
+                    
                 
             });
+            
+            activarCampos();
         }
         
         // EVENTOS DE CONTROL PARA LA CARGA DE GRUPOS

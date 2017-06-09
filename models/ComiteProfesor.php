@@ -62,4 +62,26 @@ class ComiteProfesor extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Profesor::className(), ['idProfesor' => 'idProfesor']);
     }
+    
+    /**
+     * 
+     * @param ComiteProfesor $obj_1
+     * @param ComiteProfesor $obj_2
+     * @return int
+     */
+    public static function compare($obj_1, $obj_2) {
+        return strcmp(spl_object_hash($obj_1), spl_object_hash($obj_2));
+    }
+    
+    /**
+     * 
+     * @param ComiteProfesor[] $array_objetos
+     * @return boolean
+     */
+    public static function eliminarMultiple($array_objetos) {
+        foreach ($array_objetos as $objeto) {
+            $objeto->delete();
+        }
+        return true;
+    }
 }

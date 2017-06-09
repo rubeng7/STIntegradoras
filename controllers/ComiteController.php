@@ -11,6 +11,8 @@ use yii\filters\VerbFilter;
 use app\models\Periodo;
 use app\models\Utilerias;
 use app\models\Model;
+use app\models\ComiteProfesor;
+
 
 /**
  * ComiteController implements the CRUD actions for Comite model.
@@ -87,6 +89,76 @@ class ComiteController extends Controller {
         
         return $comite->nombre . ' Para: ' . Utilerias::getPeriodo($comite->idPeriodo0);
     }
+    
+    /**
+     * 
+     * @param Comite $model
+     * @param ComiteProfesor $comiteProfesoresOrignal
+     * @return boolean
+     */
+    private function registrar($model, $comiteProfesoresOriginal) {
+
+        // Creación de un arreglo de ComiteProfesores segun el formulario.
+        $comiteProfesores = Model::createMultiple(ComiteProfesor::className());
+
+        // Carga multiple de los datos para los objetos de la variable anterior
+        Model::loadMultiple($comiteProfesores, \Yii::$app->request->post());
+
+        // Inicio de una transacción
+        $transaccion = Yii::$app->db->beginTransaction();
+
+        if (!$model->isNewRecord) {
+            // Esta editando
+            // Colocando el id del comité a los objetos ComiteProfesor
+            foreach ($comiteProfesores as $cp) {
+                $cp->idComite = $model->idComite;
+            }
+
+            // Obtención de los registros que estan en la base de datos pero no en el formulario.
+            $comiteProfesoresOld = array_udiff($comiteProfesoresOriginal, $comiteProfesores, ['app\models\ComiteProfesor', 'compare']);
+
+            // Obtención de los nuevos registros a añadir a la base de datos.
+            $comiteProfesores = array_udiff($comiteProfesores, $comiteProfesoresOriginal, ['app\models\ComiteProfesor', 'compare']);
+
+            // Eliminación de registros duplicados en el array
+            $comiteProfesores = \app\models\Utilerias::my_array_unique($comiteProfesores);
+
+            // Eliminación de la base de datos de registros viejos
+            ComiteProfesor::eliminarMultiple($comiteProfesoresOld);
+        } else {
+            // Eliminación de registros duplicados en el array
+            $comiteProfesores = \app\models\Utilerias::my_array_unique($comiteProfesores);
+        }
+
+        //validacion ajax
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return \yii\helpers\ArrayHelper::merge(
+                            ActiveForm::validateMultiple($comiteProfesores), ActiveForm::validate($model)
+            );
+        }
+
+        // validacion php
+        $valid = $model->validate();
+        $valid = Model::validateMultiple($comiteProfesores) && $valid;
+
+        // Definir si los datos son validos
+        if ($valid) {
+            // Registrar objetos en la base de datos
+            if ($model->registrar($comiteProfesores, false)) {
+                // hacer comit y retornar true
+                $transaccion->commit();
+                return true;
+            } else {
+                /*
+                 * Hacer rollback y retornar false (Los mensajes de alerta ya 
+                 * fueron lanzados internamente)
+                 */
+                $transaccion->rollBack();
+                return false;
+            }
+        }
+    }
 
     /**
      * Creates a new Comite model.
@@ -94,36 +166,25 @@ class ComiteController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        $model = new Comite();
         
+        // Creación de variables necesarias para la creación
+        $model = new Comite();
         $comiteProfesores = [new \app\models\ComiteProfesor()];
 
+        // Condición para detectar si se debe realizar un guardado
         if ($model->load(Yii::$app->request->post())) {
             
-            $comiteProfesores = Model::createMultiple(\app\models\ComiteProfesor::className());
-            Model::loadMultiple($comiteProfesores, \Yii::$app->request->post());
-            
-            //validacion ajax
-            if (Yii::$app->request->isAjax) {
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return \yii\helpers\ArrayHelper::merge(
-                                ActiveForm::validateMultiple($comiteProfesores), ActiveForm::validate($model)
-                );
-            }
-
-            // validacion php
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($comiteProfesores) && $valid;
-
-            if ($valid) {
-                if($model->registrar($comiteProfesores, false)) {
-                    return $this->redirect(['view', 'id' => $model->idComite]);
-                }
-            } else {
-                Utilerias::setFlash('com-reg-1', 'Ocurrió un error de validación. Revisa el formulario', 'Problema de validación', 5000);
+            if ($this->registrar($model, $comiteProfesores)) {
+                return $this->redirect(['view', 'id' => $model->idComite]);
             }
         }
         
+        /*
+         * Si llega aquí significa que solo esta desplegando el formulario
+         * o que ocurrio un error
+         */
+
+        // Renderizado de la vista
         return $this->render('create', [
                     'model' => $model,
                     'comiteProfesores' => $comiteProfesores
@@ -137,15 +198,28 @@ class ComiteController extends Controller {
      * @return mixed
      */
     public function actionUpdate($id) {
+        
+        // Obtención de variables necesarias para la creación
         $model = $this->findModel($id);
-        $periodo = $model->idPeriodo0;
+        $comiteProfesores = $model->comiteProfesors;
 
-        if ($model->load(Yii::$app->request->post()) && $periodo->load(Yii::$app->request->post())) {
-            $this->registrar($model, $periodo);
+        // Condición para detectar si se debe realizar un guardado
+        if ($model->load(Yii::$app->request->post())) {
+            
+            if ($this->registrar($model, $comiteProfesores)) {
+                return $this->redirect(['view', 'id' => $model->idComite]);
+            }
         }
+        
+        /*
+         * Si llega aquí significa que solo esta desplegando el formulario
+         * o que ocurrió un error
+         */
+
+        // Renderizado de la vista
         return $this->render('update', [
                     'model' => $model,
-                    'periodo' => $periodo
+                    'comiteProfesores' => $comiteProfesores
         ]);
     }
 

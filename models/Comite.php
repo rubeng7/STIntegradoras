@@ -114,28 +114,47 @@ class Comite extends \yii\db\ActiveRecord {
         // Inicia transacción
         $transaccion = Yii::$app->db->beginTransaction();
 
+        // Intentar guardar el comité
         if ($this->save()) {
+            
+            // Variable de control
             $todoBien = true;
+            
+            // Recorrer los comitesProfesores
             foreach ($comiteProfesores as $cp) {
+                
+                // Asignar id de comite
                 $cp->idComite = $this->idComite;
+                
+                // Indicar que el profesor ahora participa en un comité
                 $cp->idProfesor0->enComite = true;
-                if (!$cp->save($validar)) {
+                
+                // Intentar gusrdar el comiteProfesor y actualizar el profesor
+                if (!($cp->save($validar) && $cp->idProfesor0->save())) {
+                    
+                    // Algo salió mal
                     $todoBien = false;
                     break;
                 }
+                
             }
+            
+            // Verificar si todo ha salido bien
             if ($todoBien) {
+                
+                // Todo salió bien. Hacer commit y retornar true
                 $transaccion->commit();
                 return true;
             } else {
-                // Lanzar alertas
+                
+                // Algo salió mal. Lanzar alertas, hacer rollback y retornar false
                 Utilerias::setFlash('com-reg-1', Model::MSG_ERR_REG_GEN .
                         'Error al relacionar profesores con el comité', Model::MSG_TITLE_FAIL_REG, 5000);
                 $transaccion->rollBack();
                 return false;
             }
         } else {
-            // Lanzar alertas
+            // No se pudo guardar el comité. Lanzar alertas, hacer rollback y retornar false
             Utilerias::setFlash('com-reg-2', Model::MSG_ERR_REG_GEN .
                     'Error al registrar el comité', Model::MSG_TITLE_FAIL_REG, 5000);
             $transaccion->rollBack();

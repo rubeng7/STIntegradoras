@@ -85,19 +85,14 @@ class ProfesorGrupoPeriodo extends \yii\db\ActiveRecord
      * @return int
      */
     public static function compare($obj_1, $obj_2) {
-        /*$mismoIdProfesor = $obj_1->idProfesor == $obj_2->idProfesor;
-        $mismoIdGrupo = $obj_1->idGrupo == $obj_2->idGrupo;
-        $mismoIdPeriodo = $obj_1->idPeriodo == $obj_2->idPeriodo;
-        
-        if($mismoIdProfesor && $mismoIdGrupo && $mismoIdPeriodo) {
-            return 0;
-        } else {
-            return -1;
-        }*/
-        
         return strcmp(spl_object_hash($obj_1), spl_object_hash($obj_2));
     }
     
+    /**
+     * 
+     * @param ProfesorGrupoPeriodo[] $array_objetos
+     * @return boolean
+     */
     public static function eliminarMultiple($array_objetos) {
         foreach ($array_objetos as $objeto) {
             $objeto->delete();

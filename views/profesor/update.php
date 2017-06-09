@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = 'Actualizar';
         'persona' => $persona,
         'usuario' => $usuario,
         'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
+        'profesorGrupoPeriodosAnteriores' => $profesorGrupoPeriodosAnteriores,
     ]) ?>
 
 </div>

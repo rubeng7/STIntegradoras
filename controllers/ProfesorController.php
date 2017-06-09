@@ -137,8 +137,11 @@ class ProfesorController extends Controller {
         // Creación de un arreglo de ProfesorGrupoPeriodos segun el formulario
         $profesorGrupoPeriodos = Model::createMultiple(ProfesorGrupoPeriodo::className());
 
-        // Carga multiple de los datos para los objetos de la variable anterior
-        Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
+        if (count($profesorGrupoPeriodos) != 0) {
+            // Carga multiple de los datos para los objetos de la variable anterior
+            Model::loadMultiple($profesorGrupoPeriodos, \Yii::$app->request->post());
+        }
+
 
         // Inicio de una transacción
         $transaccion = Yii::$app->db->beginTransaction();
@@ -184,6 +187,7 @@ class ProfesorController extends Controller {
         $valid = $model->validate() && $persona->validate() && $usuario->validate();
         $valid = Model::validateMultiple($profesorGrupoPeriodos) && $valid;
 
+
         // Definir si los datos son validos
         if ($valid) {
             // Registrar objetos en la base de datos
@@ -199,6 +203,9 @@ class ProfesorController extends Controller {
                 $transaccion->rollBack();
                 return false;
             }
+        } else {
+            Utilerias::setFlash('pro-reg-0', Model::MSG_TITLE_FAIL_REG, Model::MSG_ERR_REG_GEN, 5000);
+            return false;
         }
     }
 
@@ -213,7 +220,18 @@ class ProfesorController extends Controller {
         $model = Profesor::findOne($id);
         $usuario = $model->idProfesor0;
         $persona = $usuario->idUsuario0;
-        $profesorGrupoPeriodos = $model->profesorGrupoPeriodos;
+        $periodoActual = \app\models\Periodo::getPeriodoActualRegistrado();
+
+        if ($periodoActual == null) {
+            $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
+        } else {
+            $profesorGrupoPeriodos = $model->getProfesorGrupoPeriodos()->where(['idPeriodo' => $periodoActual->idPeriodo])->all();
+            if (count($profesorGrupoPeriodos) == 0) {
+                $profesorGrupoPeriodos = [new ProfesorGrupoPeriodo()];
+            }
+        }
+        
+        $profesorGrupoPeriodosAnteriores = $model->getProfesorGrupoPeriodos()->where(['!=', 'idPeriodo', $periodoActual->idPeriodo])->all();
 
         // Detectar si se esta guardando el registro
         if ($model->load(Yii::$app->request->post()) &&
@@ -236,7 +254,8 @@ class ProfesorController extends Controller {
                     'model' => $model,
                     'persona' => $persona,
                     'usuario' => $usuario,
-                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos
+                    'profesorGrupoPeriodos' => $profesorGrupoPeriodos,
+                    'profesorGrupoPeriodosAnteriores' => $profesorGrupoPeriodosAnteriores
         ]);
     }
 
@@ -289,7 +308,7 @@ class ProfesorController extends Controller {
                 $profesor->delete();
                 $usuario->delete();
                 $persona->delete();
-                
+
                 /*
                  *  Si llegamos aqui quiere decir que todo salió bien.
                  *  Hacer commit y redireccionar al index

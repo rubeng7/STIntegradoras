@@ -78,10 +78,22 @@ class Periodo extends \yii\db\ActiveRecord {
         return $this->hasMany(ProfesorGrupoPeriodo::className(), ['idPeriodo' => 'idPeriodo']);
     }
 
-    public static function mapeaPeriodos() {
+    /**
+     * 
+     * 
+     * @return array
+     */
+    public static function mapeaPeriodos($soloActual = false) {
+
         $periodos = Periodo::find()->orderBy('mesInicio DESC, anio DESC')->all();
+
         $arrayPeriodos = [];
         foreach ($periodos as $periodo) {
+            if ($soloActual) {
+                if (!$periodo->isCurrentlyDateInPeriodo()) {
+                    continue;
+                }
+            }
             $mesI = Utilerias::getNombreMes($periodo->mesInicio);
             $mesF = Utilerias::getNombreMes($periodo->mesFin);
             $año = $periodo->anio;
@@ -90,6 +102,29 @@ class Periodo extends \yii\db\ActiveRecord {
         }
 
         return $arrayPeriodos;
+    }
+
+    public static function getPeriodoActualRegistrado() {
+        
+        // Obtener todos los periodos
+        $periodos = Periodo::find()->all();
+
+        // Recorrer todos los periodos
+        foreach ($periodos as $periodo) {
+
+            // Verificar si es el periodo actual
+            if ($periodo->isCurrentlyDateInPeriodo()) {
+                
+                // Retornar el periodo
+                return $periodo;
+            }
+        }
+        
+        /*
+         * Si se llega aqui significa que no encontró ningun periodo registro 
+         * que sea el actual
+         */
+        return null;
     }
 
     /**
